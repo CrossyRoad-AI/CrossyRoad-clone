@@ -1,0 +1,11 @@
+newmtl Chick_pink
+Kd 0.953 0.184 0.278
+
+newmtl Chick_main
+Kd 0.996 1.000 0.996
+
+newmtl Chick_orange
+Kd 1.000 0.604 0.259
+
+newmtl Chick_black
+Kd 0.000 0.004 0.002
