@@ -27,7 +27,7 @@ class TextRenderer {
 
     public:
         // Constructor / destructor
-        TextRenderer();
+        TextRenderer(unsigned int fontSize);
         ~TextRenderer();
 
         void renderText(const std::string text, float x, const float y, const float scale, const glm::vec3 color);

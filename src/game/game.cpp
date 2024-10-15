@@ -24,7 +24,7 @@ Game* Game::getInstance() {
 
 Game::Game() {
     this->engine = new Engine("Crossy road", 800, 1200);
-    this->engine->fpsDisplayMode(true, 0.5f);
+    this->engine->fpsDisplayMode(true, 0.2f);
 
     // this->camera = new Camera(glm::vec3(45.0f, 90.0f, 70.0f), glm::vec3(10.0f, 3.0f, - (5.0f * 3.0f)));
     this->camera = new Camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
@@ -79,8 +79,23 @@ void Game::initRun() {
     this->camera->move(glm::vec3(playerPos.x + 15, playerPos.y + 60, playerPos.z + 40));
 }
 
-bool Game::checkCollisions(glm::vec3 objectPosition, unsigned int rowID) {
-    ObstacleRow* currentRow = (ObstacleRow*) obstaclesList->getElementWithId(rowID);
+void Game::playerMove(const glm::vec3 direction, const unsigned int rowId) {
+    glm::vec3 playerPos = this->player->getPosition();
+    playerPos += direction;
+
+    if(!this->checkCollisions(playerPos, rowId)) {
+        this->player->move(playerPos);
+        this->camera->pointAt(playerPos);
+
+        this->camera->move(this->camera->getPosition() + direction);
+        chickenRowId = rowId;
+    } else {
+        // Collide
+    }
+}
+
+bool Game::checkCollisions(const glm::vec3 objectPosition, const unsigned int rowID) {
+    ObstacleRow* currentRow = (ObstacleRow*) obstaclesList->getElementById(rowID);
     return currentRow->checkCollisions(objectPosition);
 }
 
@@ -110,89 +125,8 @@ void Game::loop() {
 
         unsigned int count = obstaclesList->getCount();
         while(count > 24) {
-            delete (ObstacleRow*) obstaclesList->first();
-            obstaclesList->remove(0);
+            obstaclesList->removeByIndex(0);
             count --;
         }
     } while(!this->engine->loopOnce());
-}
-
-void Game::quit() {
-    this->engine->quit();
-}
-
-// Inputs callback function
-void Game::quitGame() { glfwSetWindowShouldClose(Game::getInstance()->engine->getWindow(), true); }
-void Game::toggleWireframe() { Game::getInstance()->engine->toggleWireframeMode(); }
-
-void Game::movePlayerForward() {
-    Game* game = Game::getInstance();
-
-    glm::vec3 playerPos = game->player->getPosition();
-    playerPos.z -= 6;
-
-    if(game->checkCollisions(playerPos, chickenRowId + 1)) return;
-    
-    game->player->move(playerPos.x, playerPos.y, playerPos.z);
-    game->camera->pointAt(playerPos);
-
-    glm::vec3 cameraPos = game->camera->getPosition();
-    cameraPos.z -= 6;
-
-    game->camera->move(cameraPos);
-
-    chickenRowId += 1;
-}
-
-void Game::movePlayerLeft() {
-    Game* game = Game::getInstance();
-
-    glm::vec3 playerPos = game->player->getPosition();
-    playerPos.x -= 6;
-
-    if(game->checkCollisions(playerPos, chickenRowId)) return;
-    
-    game->player->move(playerPos.x, playerPos.y, playerPos.z);
-    game->camera->pointAt(playerPos);
-
-    glm::vec3 cameraPos = game->camera->getPosition();
-    cameraPos.x -= 6;
-
-    game->camera->move(cameraPos);
-}
-
-void Game::movePlayerRight() {
-    Game* game = Game::getInstance();
-
-    glm::vec3 playerPos = game->player->getPosition();
-    playerPos.x += 6;
-
-    if(game->checkCollisions(playerPos, chickenRowId)) return;
-    
-    game->player->move(playerPos.x, playerPos.y, playerPos.z);
-    game->camera->pointAt(playerPos);
-
-    glm::vec3 cameraPos = game->camera->getPosition();
-    cameraPos.x += 6;
-
-    game->camera->move(cameraPos);
-}
-
-void Game::movePlayerBackward() {
-    Game* game = Game::getInstance();
-
-    glm::vec3 playerPos = game->player->getPosition();
-    playerPos.z += 6;
-
-    if(game->checkCollisions(playerPos, chickenRowId - 1)) return;
-    
-    game->player->move(playerPos.x, playerPos.y, playerPos.z);
-    game->camera->pointAt(playerPos);
-
-    glm::vec3 cameraPos = game->camera->getPosition();
-    cameraPos.z += 6;
-
-    game->camera->move(cameraPos);
-
-    chickenRowId -= 1;
 }

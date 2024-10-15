@@ -4,6 +4,7 @@
 class VertexBuffer {
     private:
         unsigned int rendererID;
+        
     public:
         VertexBuffer(const void* data, const unsigned int size, unsigned int drawType); // Constructor
         ~VertexBuffer(); // Destructor

@@ -11,26 +11,14 @@ ObstacleRow::ObstacleRow(unsigned int id, Renderable* ground, Renderable* obstac
     this->groundObjects = new LinkedList();
     this->obstacles = new LinkedList();
 
-    for(int i = 0; i < 9; i++) {
-        groundObjects->add(new GameObject(ground, glm::vec3((6 * 6) - i * 6.0f, 0.0f, id * (-6.0f)), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f)));
-    }
+    // Generate ground tiles
+    for(int i = 0; i < 9; i++) groundObjects->add(new GameObject(ground, glm::vec3((6 * 6) - i * 6.0f, 0.0f, id * (-6.0f)), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f)));
 
-    for(int i = 0; i < rand() % 4; i++) {
-       obstacles->add(new GameObject(obstacle, glm::vec3((6 * 6) - (rand() % 9) * 6.0f, 3.0f, id * (-6.0f)), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f)));
-    }
+    // Generate obstacles
+    for(int i = 0; i < rand() % 4; i++) obstacles->add(new GameObject(obstacle, glm::vec3((6 * 6) - (rand() % 9) * 6.0f, 3.0f, id * (-6.0f)), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f)));
 }
 
 ObstacleRow::~ObstacleRow() {
-    while(this->groundObjects->getCount() > 0) {
-        delete (GameObject*) this->groundObjects->first();
-        this->groundObjects->remove(0);
-    }
-
-    while(this->obstacles->getCount() > 0) {
-        delete (GameObject*) this->obstacles->first();
-        this->obstacles->remove(0);
-    }
-
     delete this->groundObjects;
     delete this->obstacles;
 }

@@ -1,17 +1,11 @@
-#include <iostream>
-#include <stdlib.h>
-
 #include <glm.hpp>
 #include <gtc/matrix_transform.hpp>
-#include <gtc/type_ptr.hpp>
 
 #include "camera.hpp"
 
-Camera::Camera(const glm::vec3 position, const glm::vec3 target) {
-    // Set default values
-    this->position = position;
-    this->target = target;
-
+Camera::Camera(const glm::vec3 positionp, const glm::vec3 targetp)
+    : position(positionp), target(targetp)
+{
     this->calcViewMatrix();
 }
 

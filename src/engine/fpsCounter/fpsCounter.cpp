@@ -1,10 +1,4 @@
-#include <iostream>
-#include <iomanip>
-#include <string>
-#include <map>
-
-#include <glew.h>
-#include <glfw3.h>
+#include <glm.hpp>
 
 #include "fpscounter.hpp"
 
@@ -13,7 +7,11 @@
 FPSCounter::FPSCounter(const float updateFrequencyp)
     : updateFrequency(updateFrequencyp), lastUpdateTime(0), frameStart(glfwGetTime()), frameElaspedTime(0)
 {
-    this->textRenderer = new TextRenderer();
+    this->textRenderer = new TextRenderer(16);
+}
+
+FPSCounter::~FPSCounter() {
+    delete this->textRenderer;
 }
 
 void FPSCounter::tick() {
@@ -28,7 +26,6 @@ void FPSCounter::update() {
         lastUpdateTime = currentTime;
     }
 
-
-    char text[20]; sprintf(text, "ms / frame: %.2f", this->frameElaspedTime);
-    this->textRenderer->renderText(text, 5.0f, 1180.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+    char text[8]; sprintf(text, "%.2f ms", this->frameElaspedTime);
+    this->textRenderer->renderText(text, 5.0f, 1180.0f, 1.0f, glm::vec3(0.8f, 0.8f, 0.8f));
 }

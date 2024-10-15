@@ -3,6 +3,8 @@
 
 #include "../engine/engine.hpp"
 
+extern unsigned int chickenRowId;
+
 class Game {
     private:
 
@@ -34,20 +36,21 @@ class Game {
         void loadModels();
         void initRun();
 
-        bool checkCollisions(glm::vec3 objectPosition, unsigned int rowID);
+        void playerMove(const glm::vec3 direction, const unsigned int rowId);
+        bool checkCollisions(const glm::vec3 objectPosition, const unsigned int rowID);
 
         void loop();
 
-        void quit();
+        inline void quit() { this->engine->quit(); }
 
         // Inputs callback functions
-        static void quitGame();
-        static void toggleWireframe();
+        inline static void quitGame() { glfwSetWindowShouldClose(Game::getInstance()->engine->getWindow(), true); }
+        inline static void toggleWireframe() { Game::getInstance()->engine->toggleWireframeMode(); }
 
-        static void movePlayerForward();
-        static void movePlayerLeft();
-        static void movePlayerRight();
-        static void movePlayerBackward();
+        inline static void movePlayerForward() { Game::getInstance()->playerMove(glm::vec3(0.0f, 0.0f, -6.0f), chickenRowId + 1); }
+        inline static void movePlayerLeft() { Game::getInstance()->playerMove(glm::vec3(-6.0f, 0.0f, 0.0f), chickenRowId); }
+        inline static void movePlayerRight() { Game::getInstance()->playerMove(glm::vec3(6.0f, 0.0f, 0.0f), chickenRowId); }
+        inline static void movePlayerBackward() { Game::getInstance()->playerMove(glm::vec3(0.0f, 0.0f, 6.0f), chickenRowId - 1); }
 };
 
 #endif

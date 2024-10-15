@@ -1,11 +1,7 @@
-#include <iostream>
 #include <stdlib.h>
 
 #include <glew.h>
-
 #include <glm.hpp>
-#include <gtc/matrix_transform.hpp>
-#include <gtc/type_ptr.hpp>
 
 #include "renderable.hpp"
 
@@ -72,7 +68,10 @@ Renderable::Renderable(std::string modelFilename)
 }
 
 Renderable::~Renderable() {
-    // free(c_modelMatrices);  -------------->
+    delete this->vbp;
+    delete this->vbc;
+    delete this->vbi;
+    delete this->ib;
 }
 
 unsigned int Renderable::addInstance(glm::mat4 modelMatrix) {
@@ -86,7 +85,6 @@ unsigned int Renderable::addInstance(glm::mat4 modelMatrix) {
 }
 
 void Renderable::removeInstance(unsigned int instanceID) {
-    free(this->modelMatrices->getElementWithId(instanceID));
     this->modelMatrices->removeById(instanceID);
     this->updatedData = true;
 }
@@ -108,9 +106,11 @@ void Renderable::updateBuffer() {
             this->modelMatrices->restart();
             for(int i = 0; i < count; i++) modelMatricesArray[i] = *((glm::mat4*) this->modelMatrices->getCurrent());
 
-            glBindVertexArray(this->vao); // Bind VAO
+            glBindVertexArray(this->vao);
             this->vbi->update(modelMatricesArray, sizeof(glm::mat4) * count);
-            glBindVertexArray(0); // Unbund VAO
+            glBindVertexArray(0);
+
+            free(modelMatricesArray);
         }
 
         this->updatedData = false;
@@ -118,9 +118,10 @@ void Renderable::updateBuffer() {
 }
 
 void Renderable::render() {
-    if(this->modelMatrices->getCount()) {
-        glBindVertexArray(this->vao); // Bind VAO
-        glDrawElementsInstanced(GL_TRIANGLES, this->indicesCount, GL_UNSIGNED_INT, 0, this->modelMatrices->getCount());
-        glBindVertexArray(0); // Unbund VAO
+    unsigned int count = this->modelMatrices->getCount();
+    if(count) {
+        glBindVertexArray(this->vao);
+        glDrawElementsInstanced(GL_TRIANGLES, this->indicesCount, GL_UNSIGNED_INT, 0, count);
+        glBindVertexArray(0);
     }
 }

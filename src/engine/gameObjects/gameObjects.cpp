@@ -1,54 +1,49 @@
-#include <iostream>
-#include <stdlib.h>
-
 #include <glm.hpp>
 #include <gtc/matrix_transform.hpp>
-#include <gtc/type_ptr.hpp>
 
 #include "gameObjects.hpp"
 
 #include "../renderable/renderable.hpp"
 
-GameObject::GameObject(Renderable* renderable, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale) {
-    c_renderable = renderable;
-
-    c_position = position;
-    c_rotation = rotation;
-    c_scale = scale;
-
+GameObject::GameObject(Renderable* renderablep, const glm::vec3 positionp, const glm::vec3 rotationp, const glm::vec3 scalep)
+    : renderable(renderablep), position(positionp), rotation(rotationp), cscale(scalep)
+{
     calcModelMatrix();
-    c_instanceID = c_renderable->addInstance(c_modelMatrix);
+    this->instanceID = this->renderable->addInstance(this->modelMatrix);
 }
 
 GameObject::~GameObject() {
-    c_renderable->removeInstance(c_instanceID);
+    this->renderable->removeInstance(this->instanceID);
 }
 
 void GameObject::calcModelMatrix() {
-    c_modelMatrix = glm::mat4(1.0f);
-    c_modelMatrix = glm::translate(c_modelMatrix, c_position);
+    this->modelMatrix = glm::mat4(1.0f);
+    this->modelMatrix = glm::translate(this->modelMatrix, this->position);
 
-    c_modelMatrix = glm::rotate(c_modelMatrix, glm::radians(c_rotation[0]), glm::vec3(1.0f, 0.0f, 0.0f));
-    c_modelMatrix = glm::rotate(c_modelMatrix, glm::radians(c_rotation[1]), glm::vec3(0.0f, 1.0f, 0.0f));
-    c_modelMatrix = glm::rotate(c_modelMatrix, glm::radians(c_rotation[2]), glm::vec3(0.0f, 0.0f, 1.0f));
+    this->modelMatrix = glm::rotate(this->modelMatrix, glm::radians(this->rotation[0]), glm::vec3(1.0f, 0.0f, 0.0f));
+    this->modelMatrix = glm::rotate(this->modelMatrix, glm::radians(this->rotation[1]), glm::vec3(0.0f, 1.0f, 0.0f));
+    this->modelMatrix = glm::rotate(this->modelMatrix, glm::radians(this->rotation[2]), glm::vec3(0.0f, 0.0f, 1.0f));
 
-    c_modelMatrix = glm::scale(c_modelMatrix, c_scale);
+    this->modelMatrix = glm::scale(this->modelMatrix, this->cscale);
 }
 
-void GameObject::move(float x, float y, float z) {
-    c_position[0] = x;
-    c_position[1] = y;
-    c_position[2] = z;
+void GameObject::move(const glm::vec3 position) {
+    this->position = position;
 
     calcModelMatrix();
-    c_renderable->updateInstance(c_modelMatrix, c_instanceID);
+    this->renderable->updateInstance(this->modelMatrix, this->instanceID);
 }
 
-void GameObject::rotate(float x, float y, float z) {
-    c_rotation[0] = x;
-    c_rotation[1] = y;
-    c_rotation[2] = z;
+void GameObject::rotate(const glm::vec3 rotation) {
+    this->rotation = rotation;
 
     calcModelMatrix();
-    c_renderable->updateInstance(c_modelMatrix, c_instanceID);
+    this->renderable->updateInstance(this->modelMatrix, this->instanceID);
+}
+
+void GameObject::scale(const float scale) {
+    this->cscale = cscale;
+
+    calcModelMatrix();
+    this->renderable->updateInstance(this->modelMatrix, this->instanceID);
 }

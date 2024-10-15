@@ -15,6 +15,7 @@ class FPSCounter {
 
     public:
         FPSCounter(const float updateFrequency);
+        ~FPSCounter();
 
         void tick();
         void update();

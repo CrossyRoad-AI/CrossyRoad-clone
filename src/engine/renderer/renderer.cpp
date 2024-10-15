@@ -13,10 +13,8 @@
 #include "../renderable/renderable.hpp"
 
 Renderer::Renderer(GLFWwindow * windowp)
-    : window(windowp)
+    : window(windowp), renderableCounts(0), renderables(nullptr)
 {
-    this->renderableCounts = 0; this->renderables = nullptr;
-
     // Load and compile shader program
     this->shaderProgram = createShaderProgram("./shaders/vertex/vertex.glsl", "./shaders/fragment/fragment.glsl");
     glUseProgram(this->shaderProgram);
@@ -54,7 +52,7 @@ void Renderer::render() {
 
     // Render objects
     for(int i = 0; i < this->renderableCounts; i++) {
-        (this->renderables[i])->updateBuffer();
-        (this->renderables[i])->render();
+        this->renderables[i]->updateBuffer();
+        this->renderables[i]->render();
     }
 }

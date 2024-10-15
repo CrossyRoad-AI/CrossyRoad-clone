@@ -19,8 +19,7 @@ unsigned int DoubleLinkedList::add(void* element) {
         this->firstElement = listElement;
         this->firstElement->id = 0;
     } else {
-        this->currentElement = this->firstElement;
-        this->currentElementIndex = 0;
+        this->restart();
 
         while(this->currentElement->next) {
             this->currentElement = this->currentElement->next;
@@ -35,18 +34,17 @@ unsigned int DoubleLinkedList::add(void* element) {
         this->currentElementIndex ++;
     }
 
-    this->count ++;
-    return this->count - 1;
+    return this->count ++;
 }
 
-void DoubleLinkedList::remove(const unsigned int index) {
-    this->currentElement = this->firstElement;
-    this->currentElementIndex = 0;
+void DoubleLinkedList::removeByIndex(const unsigned int index) {
+    this->restart();
 
     if(index == 0) {
         this->firstElement = this->firstElement->next;
         this->firstElement->prev = nullptr;
         
+        free(this->currentElement->content);
         free(this->currentElement);
     } else {
         while(this->currentElementIndex < index - 1) {
@@ -67,9 +65,7 @@ void DoubleLinkedList::remove(const unsigned int index) {
 }
 
 void DoubleLinkedList::update(const unsigned int index, void* element) {
-    this->currentElement = this->firstElement;
-    this->currentElementIndex = 0;
-
+    this->restart();
     while(this->currentElementIndex < index) {
         this->currentElement = this->currentElement->next;
         this->currentElementIndex ++;
@@ -80,31 +76,29 @@ void DoubleLinkedList::update(const unsigned int index, void* element) {
 }
 
 void* DoubleLinkedList::getCurrentNext() {
-    void* current = this->currentElement->content;
+    if(this->currentElement) {
+        void* current = this->currentElement->content;
 
-    if(this->currentElement->next) {
         this->currentElement = this->currentElement->next;
         this->currentElementIndex ++;
-    }
 
-    return current;
+        return current;
+    } return NULL;
 }
 
 void* DoubleLinkedList::getCurrentPrev() {
-    void* current = this->currentElement->content;
+    if(this->currentElement) {
+        void* current = this->currentElement->content;
 
-    if(this->currentElement->prev) {
         this->currentElement = this->currentElement->prev;
         this->currentElementIndex --;
-    }
 
-    return current;
+        return current;
+    } return NULL;
 }
 
-void* DoubleLinkedList::getElementWithId(unsigned int id) {
-    this->currentElement = this->firstElement;
-    this->currentElementIndex = 0;
-
+void* DoubleLinkedList::getElementById(unsigned int id) {
+    this->restart();
     while(this->currentElement->id < id) {
         this->currentElement = this->currentElement->next;
         this->currentElementIndex ++;

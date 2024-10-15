@@ -19,11 +19,12 @@ class LinkedList {
 
     public:
         LinkedList();
+        ~LinkedList();
 
         unsigned int add(void* element);
         void update(const unsigned int index, void* element);
 
-        void remove(const unsigned int index);
+        void removeByIndex(const unsigned int index);
         void removeById(const unsigned int id);
 
         // Getters and setters
@@ -31,7 +32,7 @@ class LinkedList {
         void restart() { this->currentElement = this->firstElement; this->currentElementIndex = 0; }
 
         void* getCurrent();
-        void* getElementWithId(unsigned int index);
+        void* getElementById(unsigned int index);
 
         inline unsigned int getCount() { return this->count; }
 };

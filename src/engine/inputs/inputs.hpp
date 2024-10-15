@@ -26,6 +26,7 @@ class InputManager {
     public:
         // Constructor
         InputManager(GLFWwindow *window);
+        ~InputManager();
 
         void listenKey(unsigned int device, unsigned int key, char mode, CallbackPointer callback);
 

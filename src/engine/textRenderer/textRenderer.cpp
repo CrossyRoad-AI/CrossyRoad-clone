@@ -17,26 +17,26 @@
 
 std::map<char, Character> Characters;
 
-TextRenderer::TextRenderer() {
+TextRenderer::TextRenderer(unsigned int fontSize) {
     FT_Library ft;
     if(FT_Init_FreeType(&ft)) {
-        std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
+        std::cout << "Could not init FreeType Library" << std::endl;
         exit(10);
     }
 
     FT_Face face;
     if(FT_New_Face(ft, "fonts/Roboto.ttf", 0, &face)) {
-        std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;  
+        std::cout << "Failed to load font" << std::endl;  
         exit(11);
     }
 
-    FT_Set_Pixel_Sizes(face, 0, 20); // Set font size
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // disable byte-alignment restriction
+    FT_Set_Pixel_Sizes(face, 0, fontSize); // Set font size
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // Disable byte-alignment restriction
 
     for (unsigned char c = 0; c < 128; c++) {
-        // load character glyph 
-        if (FT_Load_Char(face, c, FT_LOAD_RENDER)){
-            std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
+        // Load character glyph 
+        if(FT_Load_Char(face, c, FT_LOAD_RENDER)) {
+            std::cout << "Failed to load Glyph" << std::endl;
             continue;
         }
 
@@ -96,6 +96,9 @@ TextRenderer::TextRenderer() {
 }
 
 TextRenderer::~TextRenderer() {
+    glDeleteVertexArrays(1, &this->vao);
+    glDeleteBuffers(1, &this->vbo);
+
     glDeleteProgram(this->shaderProgram);
 }
 
@@ -115,7 +118,6 @@ void TextRenderer::renderText(const std::string text, float x, const float y, co
     std::string::const_iterator c;
     for (c = text.begin(); c != text.end(); c++) {
         Character ch = Characters[*c];
-
 
         // Calc positions x / y and width / height
         float xpos = x + ch.bearing.x * scale;

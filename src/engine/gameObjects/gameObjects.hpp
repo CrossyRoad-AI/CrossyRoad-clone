@@ -2,38 +2,34 @@
 #define GAMEOBJECTS_HPP
 
 #include <glm.hpp>
-#include <gtc/matrix_transform.hpp>
-#include <gtc/type_ptr.hpp>
 
 #include "../renderable/renderable.hpp"
 
 class GameObject {
     private:
-        Renderable* c_renderable;
+        Renderable* renderable;
 
-        glm::vec3 c_position;
-        glm::vec3 c_rotation;
-        glm::vec3 c_scale;
+        glm::vec3 position;
+        glm::vec3 rotation;
+        glm::vec3 cscale;
 
-        glm::mat4 c_modelMatrix;
+        glm::mat4 modelMatrix;
 
-        unsigned int c_instanceID;
+        unsigned int instanceID;
 
     public:
-        GameObject(Renderable* renderable, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale);
+        GameObject(Renderable* renderable, const glm::vec3 position, const glm::vec3 rotation, const glm::vec3 scale);
         ~GameObject();
 
-        void move(const float x, const float y, const float z);
-        void rotate(const float x, const float y, const float z);
+        void move(const glm::vec3 positio);
+        void rotate(const glm::vec3 rotation);
         void scale(const float scale);
 
         void calcModelMatrix();
 
         // Getters and setters
-        inline float getRotateX() { return c_rotation[0]; }
-        inline float getRotateY() { return c_rotation[1]; }
-
-        inline glm::vec3 getPosition() { return this->c_position; }
+        inline glm::vec3 getRotation() { return this->rotation; }
+        inline glm::vec3 getPosition() { return this->position; }
 };
 
 #endif
