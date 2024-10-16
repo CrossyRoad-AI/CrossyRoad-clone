@@ -23,10 +23,10 @@ class DoubleLinkedList {
         ~DoubleLinkedList();
 
         unsigned int add(void* element);
-        void update(const unsigned int index, void* element);
+        void* update(const unsigned int index, void* element);
 
-        void removeByIndex(const unsigned int index);
-        void removeById(const unsigned int index);
+        void* removeByIndex(const unsigned int index);
+        // void removeById(const unsigned int index);
 
         // Getters and setters
         inline void* first() { return this->firstElement->content; }

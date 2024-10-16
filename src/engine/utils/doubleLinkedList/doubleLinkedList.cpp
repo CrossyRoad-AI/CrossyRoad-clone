@@ -9,6 +9,10 @@ DoubleLinkedList::DoubleLinkedList()
 
 }
 
+DoubleLinkedList::~DoubleLinkedList() {
+    printf("Delete double linked list \n");
+}
+
 unsigned int DoubleLinkedList::add(void* element) {
     DoubleLinkedListt_* listElement = (DoubleLinkedListt_*) malloc(sizeof(DoubleLinkedListt_));
     listElement->content = element;
@@ -37,14 +41,15 @@ unsigned int DoubleLinkedList::add(void* element) {
     return this->count ++;
 }
 
-void DoubleLinkedList::removeByIndex(const unsigned int index) {
+void* DoubleLinkedList::removeByIndex(const unsigned int index) {
     this->restart();
+    void* contentToFree;
 
     if(index == 0) {
         this->firstElement = this->firstElement->next;
         this->firstElement->prev = nullptr;
         
-        free(this->currentElement->content);
+        contentToFree = this->currentElement->content;
         free(this->currentElement);
     } else {
         while(this->currentElementIndex < index - 1) {
@@ -52,9 +57,9 @@ void DoubleLinkedList::removeByIndex(const unsigned int index) {
             this->currentElementIndex ++;
         }
 
-        DoubleLinkedListt_* next = this->currentElement->next->next;
+        DoubleLinkedListt* next = this->currentElement->next->next;
 
-        free(this->currentElement->next->content);
+        contentToFree = this->currentElement->next->content;
         free(this->currentElement->next);
 
         this->currentElement->next = next;
@@ -62,17 +67,20 @@ void DoubleLinkedList::removeByIndex(const unsigned int index) {
     }
 
     this->count --;
+    return contentToFree;
 }
 
-void DoubleLinkedList::update(const unsigned int index, void* element) {
+void* DoubleLinkedList::update(const unsigned int index, void* element) {
     this->restart();
     while(this->currentElementIndex < index) {
         this->currentElement = this->currentElement->next;
         this->currentElementIndex ++;
     }
 
-    free(this->currentElement->content);
+    void* contentToFree = this->currentElement->content;
     this->currentElement->content = element;
+
+    return contentToFree;
 }
 
 void* DoubleLinkedList::getCurrentNext() {

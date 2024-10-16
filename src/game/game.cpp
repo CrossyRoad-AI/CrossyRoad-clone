@@ -125,7 +125,7 @@ void Game::loop() {
 
         unsigned int count = obstaclesList->getCount();
         while(count > 24) {
-            obstaclesList->removeByIndex(0);
+            delete (ObstacleRow*) obstaclesList->removeByIndex(0);
             count --;
         }
     } while(!this->engine->loopOnce());

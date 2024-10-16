@@ -22,10 +22,10 @@ class LinkedList {
         ~LinkedList();
 
         unsigned int add(void* element);
-        void update(const unsigned int index, void* element);
+        void* update(const unsigned int index, void* element);
 
-        void removeByIndex(const unsigned int index);
-        void removeById(const unsigned int id);
+        void* removeByIndex(const unsigned int index);
+        void* removeById(const unsigned int id);
 
         // Getters and setters
         inline void* first() { return this->firstElement->content; }

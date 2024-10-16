@@ -19,6 +19,11 @@ ObstacleRow::ObstacleRow(unsigned int id, Renderable* ground, Renderable* obstac
 }
 
 ObstacleRow::~ObstacleRow() {
+    printf("delete opbstable row \n");
+
+    while(this->groundObjects->getCount()) delete (GameObject*) this->groundObjects->removeByIndex(0);
+    while(this->obstacles->getCount()) delete (GameObject*) this->obstacles->removeByIndex(0);
+
     delete this->groundObjects;
     delete this->obstacles;
 }

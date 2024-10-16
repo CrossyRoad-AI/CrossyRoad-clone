@@ -19,4 +19,8 @@ runLeak: dist\game.exe
 	drmemory.exe -- .\dist\game.exe
 
 clean:
-	@del ${OBJS}
+	@rm -rf **/*.o
+	@rm -rf **/**/*.o
+	@rm -rf **/**/**/*.o
+	@rm -rf **/**/**/*.o
+	@rm -rf **/**/**/**/*.o

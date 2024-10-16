@@ -13,6 +13,7 @@ GameObject::GameObject(Renderable* renderablep, const glm::vec3 positionp, const
 }
 
 GameObject::~GameObject() {
+    printf("deleted \n");
     this->renderable->removeInstance(this->instanceID);
 }
 
