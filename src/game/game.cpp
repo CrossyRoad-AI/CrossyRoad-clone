@@ -50,8 +50,14 @@ void Game::loadModels() {
     this->water = new Renderable("ground/water/water");
     this->renderer->registerRenderable(this->water);
 
-    this->tree = new Renderable("plants/trees/small/tree_small");
-    this->renderer->registerRenderable(this->tree);
+    this->trees[0] = new Renderable("plants/trees/small/tree_small");
+    this->renderer->registerRenderable(this->trees[0]);
+
+    this->trees[1] = new Renderable("plants/trees/mid/tree_mid");
+    this->renderer->registerRenderable(this->trees[1]);
+
+    this->trees[2] = new Renderable("plants/trees/big/tree_big");
+    this->renderer->registerRenderable(this->trees[2]);
 
     this->waterLily = new Renderable("plants/water-lily/water-lily");
     this->renderer->registerRenderable(this->waterLily);

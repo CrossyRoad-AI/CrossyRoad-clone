@@ -29,7 +29,7 @@ class Game {
         // Objects models
         Renderable* grass;
         Renderable* water;
-        Renderable* tree;
+        Renderable* trees[3];
         Renderable* waterLily;
         Renderable* chicken;
 

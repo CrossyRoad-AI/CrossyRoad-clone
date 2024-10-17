@@ -1,0 +1,11 @@
+newmtl Leaves_1
+Kd 0.665 0.757 0.125
+
+newmtl Leaves_2
+Kd 0.588 0.690 0.090
+
+newmtl Log_1
+Kd 0.443 0.247 0.212
+
+newmtl Log_2
+Kd 0.410 0.229 0.196
