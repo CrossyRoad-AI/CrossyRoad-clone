@@ -11,8 +11,6 @@ typedef struct LinkedListt_ {
 class LinkedList {
     private:
         LinkedListt* firstElement;
-
-        unsigned int currentElementIndex;
         LinkedListt* currentElement;
 
         unsigned int count;
@@ -22,16 +20,19 @@ class LinkedList {
         ~LinkedList();
 
         unsigned int add(void* element);
+
         void* update(const unsigned int index, void* element);
+        void* updateById(const unsigned int instanceId, void* element);
 
         void* removeByIndex(const unsigned int index);
         void* removeById(const unsigned int id);
 
         // Getters and setters
         inline void* first() { return this->firstElement->content; }
-        void restart() { this->currentElement = this->firstElement; this->currentElementIndex = 0; }
 
+        void restart() { this->currentElement = this->firstElement; }
         void* getCurrent();
+
         void* getElementById(unsigned int index);
 
         inline unsigned int getCount() { return this->count; }

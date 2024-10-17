@@ -30,10 +30,12 @@ class DoubleLinkedList {
 
         // Getters and setters
         inline void* first() { return this->firstElement->content; }
-        void restart() { this->currentElement = this->firstElement; this->currentElementIndex = 0; }
-
+        
+        void restart() { this->currentElement = this->firstElement; }
         void* getCurrentNext();
         void* getCurrentPrev();
+
+        void* getElementByIndex(unsigned int index);
         void* getElementById(unsigned int index);
 
         inline unsigned int getCount() { return this->count; }

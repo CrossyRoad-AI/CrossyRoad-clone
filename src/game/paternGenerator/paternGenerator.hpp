@@ -1,0 +1,6 @@
+#ifndef PATERNGENERATOR_HPP
+#define PATERNGENERATOR_HPP
+
+
+
+#endif

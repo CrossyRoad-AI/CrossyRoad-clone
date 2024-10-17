@@ -1,0 +1,14 @@
+newmtl Car_black
+Kd 0.004988 0.004988 0.004988
+
+newmtl Car_grey
+Kd 0.118325 0.115662 0.159428
+
+newmtl Car_orange
+Kd 0.982246 0.162029 0.038204
+
+newmtl Car_red
+Kd 1.000000 0.072272 0.024158
+
+newmtl Car_white
+Kd 1.000000 1.000000 1.000000

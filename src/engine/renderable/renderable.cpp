@@ -78,10 +78,10 @@ unsigned int Renderable::addInstance(glm::mat4 modelMatrix) {
     glm::mat4* modelMatrixp = (glm::mat4*) malloc(sizeof(glm::mat4));
     *modelMatrixp = modelMatrix;
 
-    unsigned int index = this->modelMatrices->add(modelMatrixp);
+    unsigned int instanceID = this->modelMatrices->add(modelMatrixp);
     this->updatedData = true;
 
-    return index;
+    return instanceID;
 }
 
 void Renderable::removeInstance(unsigned int instanceID) {
@@ -93,7 +93,7 @@ void Renderable::updateInstance(glm::mat4 modelMatrix, unsigned int instanceID) 
     glm::mat4* modelMatrixp = (glm::mat4*) malloc(sizeof(glm::mat4));
     *modelMatrixp = modelMatrix;
 
-    free(this->modelMatrices->update(instanceID, modelMatrixp));
+    free(this->modelMatrices->updateById(instanceID, modelMatrixp));
     this->updatedData = true;
 }
 

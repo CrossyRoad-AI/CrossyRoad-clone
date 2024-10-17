@@ -1,19 +1,31 @@
 #ifndef OBSTACLEROW_HPP
 #define OBSTACLEROW_HPP
 
-#include "../../engine/renderer/renderer.hpp"
+#include "../game.hpp"
 #include "../../engine/utils/linkedList/linkedList.hpp"
 
 class ObstacleRow {
     private:
+        LinkedList* waterObjects;
         LinkedList* groundObjects;
         LinkedList* obstacles;
 
+        unsigned int rowType;
+        unsigned int rowTypeSpecific;
+
+        unsigned int rowIndex;
+
     public:
-        ObstacleRow(unsigned int id, Renderable* renderable, Renderable* obstacle, Renderer* renderer);
+        ObstacleRow(const unsigned int rowType, const unsigned int rowIndex, Game* game);
         ~ObstacleRow();
 
-        bool checkCollisions(glm::vec3 objectPosition);
+        void update();
+
+        bool checkCollisions(const glm::vec3 objectPosition);
+        bool checkGround(glm::vec3 objectPosition);
+
+        // Getters and setters
+        inline unsigned int getRowIndex() { return this->rowIndex; }
 };
 
 #endif

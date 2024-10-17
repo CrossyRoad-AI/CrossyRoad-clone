@@ -4,72 +4,74 @@
 #include "linkedList.hpp"
 
 LinkedList::LinkedList()
-    : firstElement(nullptr), currentElementIndex(0), currentElement(nullptr), count(0)
-{
+    : firstElement(nullptr), currentElement(nullptr), count(0)
+{}
 
-}
-
-LinkedList::~LinkedList() {
-    printf("delete element linked list \n");
-}
+LinkedList::~LinkedList() {}
 
 unsigned int LinkedList::add(void* element) {
     LinkedListt* listElement = (LinkedListt*) malloc(sizeof(LinkedListt));
     listElement->content = element;
     listElement->next = nullptr;
 
+    this->count ++;
+
     if(!this->firstElement) {
         this->firstElement = listElement;
         this->firstElement->id = 0;
+
+        return 0;
     } else {
-        this->restart();
-        while(this->currentElement->next) {
-            this->currentElement = this->currentElement->next;
-            this->currentElementIndex ++;
-        }
+        LinkedListt* current = this->firstElement;
+        while(current->next) current = current->next;
 
-        this->currentElement->next = listElement;
-        listElement->id = this->currentElement->id + 1;
+        current->next = listElement;
+        listElement->id = current->id + 1;
+
+        return listElement->id;
     }
-
-    return this->count ++;
 }
 
 void* LinkedList::update(const unsigned int index, void* element) {
-    this->restart();
+    LinkedListt* current = this->firstElement;
+    unsigned int i = 0;
 
-    while(this->currentElementIndex < index) {
-        this->currentElement = this->currentElement->next;
-        this->currentElementIndex ++;
-    }
+    while(i ++ < index) current = current->next;
 
-    void* contentToFree = this->currentElement->content;
-    this->currentElement->content = element;
+    void* contentToFree = current->content;
+    current->content = element;
+
+    return contentToFree;
+}
+
+void* LinkedList::updateById(const unsigned int instanceId, void* element) {
+    LinkedListt* current = this->firstElement;
+    while(current->id < instanceId) current = current->next;
+
+    void* contentToFree = current->content;
+    current->content = element;
 
     return contentToFree;
 }
 
 void* LinkedList::removeByIndex(const unsigned int index) {
-    this->restart();
+    LinkedListt* current = this->firstElement;
     void* contentToFree;
 
     if(index == 0) {
         this->firstElement = this->firstElement->next;
 
-        contentToFree = this->currentElement->content;
-        free(this->currentElement);
+        contentToFree = current->content;
+        free(current);
     } else {
-        while(this->currentElementIndex < index - 1) {
-            this->currentElement = this->currentElement->next;
-            this->currentElementIndex ++;
-        }
+        unsigned int i = 0;
+        while(i ++ < index - 1) current = current->next;
+        LinkedListt* next = current->next->next;
 
-        LinkedListt* next = this->currentElement->next->next;
+        contentToFree = current->next->content;
+        free(current->next);
 
-        contentToFree = this->currentElement->next->content;
-        free(this->currentElement->next);
-
-        this->currentElement->next = next;
+        current->next = next;
     }
 
     this->count --;
@@ -77,26 +79,27 @@ void* LinkedList::removeByIndex(const unsigned int index) {
 }
 
 void* LinkedList::removeById(const unsigned int id) {
-    this->restart();
+    LinkedListt* current = this->firstElement;
+    unsigned int i = 0;
     void* contentToFree;
 
-    while(this->currentElement->id < id) {
-        this->currentElement = this->currentElement->next;
-        this->currentElementIndex ++;
+    while(current->id < id) {
+        current = current->next;
+        i ++;
     }
 
-    if(this->currentElementIndex == 0) {
+    if(i == 0) {
         this->firstElement = this->firstElement->next;
 
-        contentToFree = this->currentElement->content;
-        free(this->currentElement);
+        contentToFree = current->content;
+        free(current);
     } else {
-        LinkedListt* next = this->currentElement->next->next;
+        LinkedListt* next = current->next->next;
 
-        contentToFree = this->currentElement->next->content;
-        free(this->currentElement->next);
+        contentToFree = current->next->content;
+        free(current->next);
 
-        this->currentElement->next = next;
+        current->next = next;
     }
 
     this->count --;
@@ -105,22 +108,16 @@ void* LinkedList::removeById(const unsigned int id) {
 
 void* LinkedList::getCurrent() {
     if(this->currentElement) {
-        void* current = this->currentElement->content;
-
+        void* content = this->currentElement->content;
         this->currentElement = this->currentElement->next;
-        this->currentElementIndex ++;
 
-        return current;
+        return content;
     } return NULL;
 }
 
 void* LinkedList::getElementById(unsigned int id) {
-    this->restart();
+    LinkedListt* current = this->firstElement;
+    while(current->id < id) current = current->next;
 
-    while(this->currentElement->id < id) {
-        this->currentElement = this->currentElement->next;
-        this->currentElementIndex ++;
-    }
-
-    return this->currentElement->content;
+    return current->content;
 }

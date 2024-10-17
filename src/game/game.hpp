@@ -2,6 +2,7 @@
 #define GAME_HPP
 
 #include "../engine/engine.hpp"
+#include "../engine/utils/doubleLinkedList/doubleLinkedList.hpp"
 
 extern unsigned int chickenRowId;
 
@@ -15,14 +16,8 @@ class Game {
         Renderer *renderer;
         Camera* camera;
 
-        // Objects models
-        Renderable* grass;
-        Renderable* water;
-        Renderable* tree;
-        Renderable* waterLily;
-        Renderable* chicken;
-
-        GameObject* player;
+        unsigned int playerRowIndex;
+        unsigned int furthestRowIndex;
 
     public:
         // Singleton
@@ -30,6 +25,18 @@ class Game {
 
         static Game* getInstance();
         static Game* instance;
+
+        // Objects models
+        Renderable* grass;
+        Renderable* water;
+        Renderable* tree;
+        Renderable* waterLily;
+        Renderable* chicken;
+
+        // Game objects
+        DoubleLinkedList* rows;
+
+        GameObject* player;
 
         void initInputs();
 
@@ -39,6 +46,8 @@ class Game {
         void playerMove(const glm::vec3 direction, const unsigned int rowId);
         bool checkCollisions(const glm::vec3 objectPosition, const unsigned int rowID);
 
+        void generateNewRows();
+
         void loop();
 
         inline void quit() { this->engine->quit(); }
@@ -47,10 +56,10 @@ class Game {
         inline static void quitGame() { glfwSetWindowShouldClose(Game::getInstance()->engine->getWindow(), true); }
         inline static void toggleWireframe() { Game::getInstance()->engine->toggleWireframeMode(); }
 
-        inline static void movePlayerForward() { Game::getInstance()->playerMove(glm::vec3(0.0f, 0.0f, -6.0f), chickenRowId + 1); }
-        inline static void movePlayerLeft() { Game::getInstance()->playerMove(glm::vec3(-6.0f, 0.0f, 0.0f), chickenRowId); }
-        inline static void movePlayerRight() { Game::getInstance()->playerMove(glm::vec3(6.0f, 0.0f, 0.0f), chickenRowId); }
-        inline static void movePlayerBackward() { Game::getInstance()->playerMove(glm::vec3(0.0f, 0.0f, 6.0f), chickenRowId - 1); }
+        inline static void movePlayerForward() { Game* game = Game::getInstance(); game->playerMove(glm::vec3(0.0f, 0.0f, -6.0f), game->playerRowIndex + 1); }
+        inline static void movePlayerLeft() { Game* game = Game::getInstance(); game->playerMove(glm::vec3(-6.0f, 0.0f, 0.0f), game->playerRowIndex); }
+        inline static void movePlayerRight() { Game* game = Game::getInstance(); game->playerMove(glm::vec3(6.0f, 0.0f, 0.0f), game->playerRowIndex); }
+        inline static void movePlayerBackward() { Game* game = Game::getInstance(); game->playerMove(glm::vec3(0.0f, 0.0f, 6.0f), game->playerRowIndex - 1); }
 };
 
 #endif

@@ -52,7 +52,7 @@ void Renderer::render() {
 
     // Render objects
     for(int i = 0; i < this->renderableCounts; i++) {
-        this->renderables[i]->updateBuffer();
+        this->renderables[i]->updateBuffer(); // Place somewhere else
         this->renderables[i]->render();
     }
 }
