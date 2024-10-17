@@ -16,6 +16,8 @@ Game* Game::getInstance() {
     return Game::instance;
 }
 
+bool restartGame = false;
+
 Game::Game()
     : rows(new DoubleLinkedList())
 {
@@ -91,7 +93,7 @@ void Game::playerMove(const glm::vec3 direction, const unsigned int rowIndex) {
     playerPos += direction;
 
     if(!((ObstacleRow*) this->rows->getElementById(rowIndex))->checkGround(playerPos)) {
-        printf("player drowned \n");
+        restartGame = true;
     } else if(!((ObstacleRow*) this->rows->getElementById(rowIndex))->checkCollisions(playerPos)) {
         this->player->move(playerPos);
         this->camera->pointAt(playerPos);
@@ -133,7 +135,12 @@ void Game::loop() {
 
         // Generate new rows
         while(this->playerRowIndex + FURTHEST_GENERATED_ROW > this->furthestRowIndex) this->generateNewRows();
-    } while(!this->engine->loopOnce());
+    } while(!this->engine->loopOnce() && !restartGame);
+
+    if(restartGame) {
+        restartGame = false;
+        this->restart();
+    }
 }
 
 void Game::generateNewRows() {
@@ -165,4 +172,21 @@ void Game::generateNewRows() {
             }
         break;
     }
+}
+
+void Game::restart() {
+    // Clear current game data
+    while(this->rows->getCount()) delete (ObstacleRow*) this->rows->removeByIndex(0);
+    
+    delete this->renderer;
+
+    this->renderer = new Renderer(this->engine->getWindow());
+    this->renderer->registerCamera(this->camera);
+    this->engine->registerRenderer(this->renderer);
+
+    // Refill data
+    this->loadModels();
+    this->initRun();
+
+    this->loop();
 }

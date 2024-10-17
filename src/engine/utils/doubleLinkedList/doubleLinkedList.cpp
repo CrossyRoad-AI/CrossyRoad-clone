@@ -43,8 +43,8 @@ void* DoubleLinkedList::removeByIndex(const unsigned int index) {
         contentToFree = this->firstElement->content;
         this->firstElement = this->firstElement->next;
         
-        free(this->firstElement->prev);
-        this->firstElement->prev = nullptr;
+        free(current->prev);
+        if(this->firstElement) this->firstElement->prev = nullptr;
     } else {
         while(i ++ < index - 1) current = current->next;
         DoubleLinkedListt* next = current->next->next;

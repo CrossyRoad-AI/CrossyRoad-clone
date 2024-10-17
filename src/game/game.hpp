@@ -50,6 +50,7 @@ class Game {
 
         void loop();
 
+        void restart();
         inline void quit() { this->engine->quit(); }
 
         // Inputs callback functions
