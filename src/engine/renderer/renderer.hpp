@@ -12,9 +12,11 @@ class Renderer {
         GLFWwindow* window;
         Camera* camera;
 
-        unsigned int shaderProgram;
-        unsigned int viewLocation;
-        unsigned int projectionLocation;
+        // unsigned int shaderProgram;
+        // unsigned int viewLocation;
+        // unsigned int projectionLocation;
+
+        unsigned int uboExampleBlock;
 
         glm::mat4 projectionMatrix;
 

@@ -1,8 +1,6 @@
-#version 410 core
+#version 420 core
 
-uniform vec4 u_color;
-
-varying vec3 v_color;
+in vec3 v_color;
 
 layout(location = 0) out vec4 color;
 

@@ -9,27 +9,38 @@
 #include <gtc/type_ptr.hpp>
 
 #include "renderer.hpp"
-#include "../shaders/shaderLoader.hpp"
 #include "../renderable/renderable.hpp"
 
 Renderer::Renderer(GLFWwindow * windowp)
     : window(windowp), renderableCounts(0), renderables(nullptr)
 {
     // Load and compile shader program
-    this->shaderProgram = createShaderProgram("./shaders/vertex/vertex.glsl", "./shaders/fragment/fragment.glsl");
-    glUseProgram(this->shaderProgram);
+    // this->shaderProgram = createShaderProgram("./shaders/vertex/vertex.glsl", "./shaders/fragment/fragment.glsl");
+    // glUseProgram(this->shaderProgram);
 
     // Get uniforms location
-    this->viewLocation = glGetUniformLocation(this->shaderProgram, "view");
-    this->projectionLocation = glGetUniformLocation(this->shaderProgram, "projection");
+    // this->projectionLocation = glGetUniformLocation(this->shaderProgram, "projection");
+    // this->viewLocation = glGetUniformLocation(this->shaderProgram, "view");
 
     // Define projection matrix
     float fov = 45.0f;
     this->projectionMatrix = glm::perspective(glm::radians(fov), 800.0f / 1200.0f, 0.1f, 200.0f);
+
+    glGenBuffers(1, &this->uboExampleBlock);
+    glBindBuffer(GL_UNIFORM_BUFFER, this->uboExampleBlock);
+    glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), NULL, GL_STATIC_DRAW);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+    // glUniformBlockBinding(shaderProgram, 0, 0); // --> with shader program building
+    glBindBufferBase(GL_UNIFORM_BUFFER, 0, this->uboExampleBlock);
+
+    glBindBuffer(GL_UNIFORM_BUFFER, this->uboExampleBlock);
+    glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), &this->projectionMatrix[0][0]);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
 Renderer::~Renderer() {
-    glDeleteProgram(this->shaderProgram);
+    // glDeleteProgram(this->shaderProgram);
     free(this->renderables);
 }
 
@@ -42,13 +53,16 @@ void Renderer::registerRenderable(Renderable* renderable) {
 
 void Renderer::render() {
     // Select program
-    glUseProgram(this->shaderProgram);
+    // glUseProgram(this->shaderProgram);
 
     // Set view matrix uniform
-    glUniformMatrix4fv(this->viewLocation, 1, GL_FALSE, this->camera->getViewMatrix());
+    // glUniformMatrix4fv(this->viewLocation, 1, GL_FALSE, this->camera->getViewMatrix());
+    glBindBuffer(GL_UNIFORM_BUFFER, this->uboExampleBlock);
+    glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), this->camera->getViewMatrix());
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
     // Set projection matrix uniform
-    glUniformMatrix4fv(this->projectionLocation, 1, GL_FALSE, &this->projectionMatrix[0][0]);
+    // glUniformMatrix4fv(this->projectionLocation, 1, GL_FALSE, &this->projectionMatrix[0][0]);
 
     // Render objects
     for(int i = 0; i < this->renderableCounts; i++) {

@@ -6,10 +6,6 @@
 
 class ObstacleRow {
     private:
-        LinkedList* waterObjects;
-        LinkedList* groundObjects;
-        LinkedList* obstacles;
-
         unsigned int rowType;
         unsigned int rowTypeSpecific;
 
@@ -19,6 +15,10 @@ class ObstacleRow {
         ObstacleRow(const unsigned int rowType, const unsigned int rowIndex, Game* game);
         ~ObstacleRow();
 
+        LinkedList* waterObjects;
+        LinkedList* groundObjects;
+        LinkedList* obstacles;
+
         void update();
 
         bool checkCollisions(const glm::vec3 objectPosition);
@@ -26,6 +26,8 @@ class ObstacleRow {
 
         // Getters and setters
         inline unsigned int getRowIndex() { return this->rowIndex; }
+
+        inline unsigned int getType() { return this->rowType; }
 };
 
 #endif

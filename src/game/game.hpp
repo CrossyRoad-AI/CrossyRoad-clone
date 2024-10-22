@@ -16,9 +16,6 @@ class Game {
         Renderer *renderer;
         Camera* camera;
 
-        unsigned int playerRowIndex;
-        unsigned int furthestRowIndex;
-
     public:
         // Singleton
         Game();
@@ -37,6 +34,9 @@ class Game {
         DoubleLinkedList* rows;
 
         GameObject* player;
+
+        unsigned int playerRowIndex;
+        unsigned int furthestRowIndex;
 
         void initInputs();
 

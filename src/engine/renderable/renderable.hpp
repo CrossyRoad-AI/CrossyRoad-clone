@@ -17,16 +17,22 @@ class Renderable {
         unsigned int vao;
         unsigned int indicesCount;
 
+        bool useNormals;
+
         bool updatedData;
         LinkedList* modelMatrices;
 
         VertexBuffer* vbp;
         VertexBuffer* vbc;
+        VertexBuffer* vbn;
         VertexBuffer* vbi;
         IndexBuffer* ib;
 
+        unsigned int shaderProgram;
+
     public:
-        Renderable(std::string modelFilename); // Constructor
+        // Renderable(std::string modelFilename); // Constructor
+        Renderable(std::string modelFilename, bool useNormals); // Constructor
         ~Renderable(); // Destructor
 
         unsigned int addInstance(glm::mat4 modelMatrix);
