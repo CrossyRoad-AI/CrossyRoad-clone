@@ -9,8 +9,8 @@ GLFWwindow* createWindow(const char* windowName, const unsigned int width, const
     GLFWwindow* window = (GLFWwindow*) malloc(sizeof(GLFWwindow*));
 
     // Hard select opengl version and profile
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     // Set window settings
