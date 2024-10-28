@@ -18,9 +18,7 @@ void sendData() {
     Game* game = Game::getInstance();
 
     // Clear memory buffer
-    for(int i = 0; i < 5000; i++) {
-        memoryBuffer[i] = 0;
-    }
+    for(int i = 0; i < 1200; i++) memoryBuffer[i] = 0;
 
     memcpy(&memoryBuffer[1], &game->playerScore, 4); // Current score as int
     memoryBuffer[5] = (gameRunning ? 1 : 0); // Player state, 1 en vie, 0 mort --> edit
@@ -113,10 +111,6 @@ void sendData() {
     memcpy(&memoryBuffer[offset], &waterLilyCount, 4);
     if(waterLilyCount) memcpy(&memoryBuffer[offset + 4], waterLilyPositions, waterLilyCount * 2 * 4);
     offset = offset + 4 + waterLilyCount * 2 * 4;
-
-    // // Int de fin
-    unsigned int max = 4294967295; // All ones
-    memcpy(&memoryBuffer[offset], &max, 4);
 
     // Data is ready
     memoryBuffer[0] = 1;
@@ -251,12 +245,28 @@ void Game::loop() {
 
         // Write data to shared memory
         if(sendDataRequest) sendData();
+
+        // Listen for actions written inside the shared memory
+        if(memoryBuffer[1199] != 0) {
+            if(memoryBuffer[1199] == 1) this->playerMove(glm::vec3(0.0f, 0.0f, -6.0f), this->playerRowIndex + 1);
+            else if(memoryBuffer[1199] == 2) this->playerMove(glm::vec3(6.0f, 0.0f, 0.0f), this->playerRowIndex);
+            else if(memoryBuffer[1199] == 3) this->playerMove(glm::vec3(-6.0f, 0.0f, 0.0f), this->playerRowIndex);
+            else if(memoryBuffer[1199] == 4) this->playerMove(glm::vec3(0.0f, 0.0f, 6.0f), this->playerRowIndex - 1);
+
+            memoryBuffer[1199] = 0;
+        }
     } while(!this->engine->loopOnce() && gameRunning);
 
     sendData();
 
     // Wait for restart
     do {
+        // Listen for actions written inside the shared memory
+        if(memoryBuffer[1199] == 10) {
+            shouldRestartGame = true;
+            memoryBuffer[1199] = 0;
+        }
+
         if(shouldRestartGame) this->restart();
     } while(!this->engine->loopOnce());
 }

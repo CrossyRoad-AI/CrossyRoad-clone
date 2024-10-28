@@ -2,7 +2,7 @@
 #define CONSTANTS_H
 
 // Shared memory
-static const char MEMORY_MAP_NAME[] = "Global\\crossyroad-memorymap";
+static const char MEMORY_MAP_NAME[] = "Global\\crossyroad-memorymapt";
 
 // General game consts
 static const unsigned int FURTHEST_GENERATED_ROW = 15;

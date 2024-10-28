@@ -17,13 +17,13 @@ HANDLE mapFile;
 char* memoryBuffer;
 
 void initSharedMemory() {
-    mapFile = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE | SEC_NOCACHE | SEC_COMMIT, 0, 5000, MEMORY_MAP_NAME);
+    mapFile = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE | SEC_NOCACHE | SEC_COMMIT, 0, 1200, MEMORY_MAP_NAME);
 	if(mapFile == NULL) {
 		printf("[!]Could not create file mapping object1 (%d), remember to run this program as administrator \n", GetLastError());
 		exit(1);
 	}
 
-    memoryBuffer = (char *) MapViewOfFile(mapFile, FILE_MAP_ALL_ACCESS, 0, 0, 5000);
+    memoryBuffer = (char *) MapViewOfFile(mapFile, FILE_MAP_ALL_ACCESS, 0, 0, 1200);
 	if(memoryBuffer == NULL) {
 		printf("[!]Could not map view of file1 (%d)\n", GetLastError());
 
