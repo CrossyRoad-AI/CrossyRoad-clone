@@ -19,7 +19,7 @@ InputManager::~InputManager() {
     free(this->eventsToListen);
 }
 
-void InputManager::listenKey(unsigned int device, unsigned int key, char mode, CallbackPointer callback) {
+void InputManager::listenKey(char device, unsigned int key, char mode, CallbackPointer callback) {
     this->eventsToListen = (EventsToListen*) realloc(this->eventsToListen, sizeof(EventsToListen) * (this->nbEventsToListen + 1));
     this->eventsToListen[this->nbEventsToListen] = { .device = device, .key = key, .mode = mode, .lastKeyState = GLFW_RELEASE, .keyCallback = callback};
 

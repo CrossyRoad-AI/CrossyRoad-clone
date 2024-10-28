@@ -20,7 +20,7 @@ GLFWwindow* createWindow(const char* windowName, const unsigned int width, const
     glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
 
     glfwWindowHint(GLFW_REFRESH_RATE, 60);
-    glfwWindowHint(GLFW_SAMPLES, 8);
+    // glfwWindowHint(GLFW_SAMPLES, 8);
 
     window = glfwCreateWindow(width, height, windowName, NULL, NULL);
 
@@ -42,7 +42,7 @@ GLFWwindow* createWindow(const char* windowName, const unsigned int width, const
     glViewport(0, 0, width, height);
 
     // Enable v-sync (minimum 1 display refresh before new frame rendering)
-    glfwSwapInterval(1);
+    // glfwSwapInterval(1);
 
     // Show the window
     glfwRestoreWindow(window);

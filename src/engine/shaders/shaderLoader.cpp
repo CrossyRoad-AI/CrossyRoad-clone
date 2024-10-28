@@ -9,11 +9,11 @@ char* loaderShaderFile(const char* fileName) {
 
     // Calculate file length (aka get size to malloc char*)
     fseek(file, 0, SEEK_END);
-    const long fsize = ftell(file) - 2;
+    const long fsize = ftell(file);
     fseek(file, 0, SEEK_SET);
 
     // Alloc memory to store file
-    char *string = (char *) malloc(fsize);
+    char *string = (char *) malloc(sizeof(char) * fsize);
     for(int i = 0; i < fsize; i++) string[i] = 0;
 
     // Read entire file

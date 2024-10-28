@@ -10,64 +10,6 @@
 #include "../renderer/vertexBuffer/vertexBuffer.hpp"
 #include "../renderer/indexBuffer/indexBuffer.hpp"
 
-// Renderable::Renderable(std::string modelFilename)
-//     : modelMatrices(new LinkedList()), updatedData(false)
-// {
-//     float* vertexPositions, *vertexColors;
-//     unsigned int *indices, vertexCount;
-
-//     // Load model from filename
-//     loadModel(modelFilename, &vertexPositions, &vertexColors, &indices, &vertexCount, &this->indicesCount);
-
-//     // Generate and bind VAO
-//     glGenVertexArrays(1, &this->vao);
-//     glBindVertexArray(this->vao);
-
-//     // Creating a buffer of data for vertex positions
-//     this->vbp = new VertexBuffer(vertexPositions, vertexCount * sizeof(float), GL_STATIC_DRAW);
-
-//     // Setup vertex positions structure infos
-//     glEnableVertexAttribArray(0);
-//     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
-
-//     // Creating a buffer of data for vertex colors
-//     this->vbc = new VertexBuffer(vertexColors, vertexCount * sizeof(float), GL_STATIC_DRAW);
-
-//     // Setup vertex colors structure infos
-//     glEnableVertexAttribArray(1);
-//     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
-
-//     // Intance buffer storing all tramformations matrices of instamces
-//     this->vbi = new VertexBuffer(0, sizeof(glm::mat4) * 0, GL_STREAM_DRAW);
-
-//     // Setup instance buffer structure infos, is mat4 so need attrib pointer (wich hold only vec4)
-//     glEnableVertexAttribArray(3);
-//     glEnableVertexAttribArray(4);
-//     glEnableVertexAttribArray(5);
-//     glEnableVertexAttribArray(6);
-
-//     glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), 0);
-//     glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (void*) (sizeof(glm::vec4)));
-//     glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (void*) (2 * sizeof(glm::vec4)));
-//     glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (void*) (3 * sizeof(glm::vec4)));
-
-//     glVertexAttribDivisor(3, 1);
-//     glVertexAttribDivisor(4, 1);
-//     glVertexAttribDivisor(5, 1);
-//     glVertexAttribDivisor(6, 1);
-
-//     // Creating index buffer
-//     this->ib = new IndexBuffer(indices, this->indicesCount);
-
-//     // Unbund VAO
-//     glBindVertexArray(0);
-
-//     // Free
-//     free(vertexPositions);
-//     free(vertexColors);
-//     free(indices);
-// }
-
 Renderable::Renderable(std::string modelFilename, bool useNormalsp)
     : modelMatrices(new LinkedList()), updatedData(false), useNormals(useNormalsp)
 {
@@ -76,7 +18,7 @@ Renderable::Renderable(std::string modelFilename, bool useNormalsp)
 
     // Load model from filename
     if(this->useNormals) loadOBJModel(modelFilename, &vertexPositions, &vertexColors, &vertexNormals, &indices, &vertexCount, &this->indicesCount);
-    else loadModel(modelFilename, &vertexPositions, &vertexColors, &indices, &vertexCount, &this->indicesCount);
+    else loadOBJModel(modelFilename, &vertexPositions, &vertexColors, &indices, &vertexCount, &this->indicesCount);
 
     // Generate and bind VAO
     glGenVertexArrays(1, &this->vao);
@@ -108,7 +50,7 @@ Renderable::Renderable(std::string modelFilename, bool useNormalsp)
         offset = 2;
     } else offset = 1;
 
-    // Intance buffer storing all tramformations matrices of instamces
+    // Intance buffer storing all transformations matrices of instamces
     this->vbi = new VertexBuffer(0, sizeof(glm::mat4) * 0, GL_STREAM_DRAW);
 
     // Setup instance buffer structure infos, is mat4 so need attrib pointer (wich hold only vec4)
@@ -142,15 +84,19 @@ Renderable::Renderable(std::string modelFilename, bool useNormalsp)
     // Free
     free(vertexPositions);
     free(vertexColors);
+    free(vertexNormals);
     free(indices);
 }
 
 Renderable::~Renderable() {
     delete this->vbp;
     delete this->vbc;
-    delete this->vbn;
+    if(this->useNormals) delete this->vbn;
+
     delete this->vbi;
     delete this->ib;
+
+    glDeleteProgram(this->shaderProgram);
 }
 
 unsigned int Renderable::addInstance(glm::mat4 modelMatrix) {
@@ -177,30 +123,30 @@ void Renderable::updateInstance(glm::mat4 modelMatrix, unsigned int instanceID) 
 }
 
 void Renderable::updateBuffer() {
-    if(this->updatedData) {
-        unsigned int count = this->modelMatrices->getCount();
-        if(count > 0) {
-            glm::mat4* modelMatricesArray = (glm::mat4*) malloc(sizeof(glm::mat4) * count);
+    unsigned int count = this->modelMatrices->getCount();
+    if(count > 0) {
+        glm::mat4* modelMatricesArray = (glm::mat4*) malloc(sizeof(glm::mat4) * count);
 
-            this->modelMatrices->restart();
-            for(int i = 0; i < count; i++) modelMatricesArray[i] = *((glm::mat4*) this->modelMatrices->getCurrent());
+        this->modelMatrices->restart();
+        for(int i = 0; i < count; i++) modelMatricesArray[i] = *((glm::mat4*) this->modelMatrices->getCurrent());
 
-            glBindVertexArray(this->vao);
-            this->vbi->update(modelMatricesArray, sizeof(glm::mat4) * count);
-            glBindVertexArray(0);
+        glBindVertexArray(this->vao);
+        this->vbi->update(modelMatricesArray, sizeof(glm::mat4) * count);
+        glBindVertexArray(0);
 
-            free(modelMatricesArray);
-        }
-
-        this->updatedData = false;
+        free(modelMatricesArray);
     }
+
+    this->updatedData = false;
 }
 
 void Renderable::render() {
-    glUseProgram(this->shaderProgram);
+    if(this->updatedData) this->updateBuffer();
 
     unsigned int count = this->modelMatrices->getCount();
     if(count) {
+        glUseProgram(this->shaderProgram);
+        
         glBindVertexArray(this->vao);
         glDrawElementsInstanced(GL_TRIANGLES, this->indicesCount, GL_UNSIGNED_INT, 0, count);
         glBindVertexArray(0);

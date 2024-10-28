@@ -14,9 +14,16 @@ typedef struct Color_ {
     int illum;
 } Color;
 
-static void updateVertexArray(float** vertexPositions, float** vertexColors, float* tempVertices, Color* colors, unsigned int* correspondances, unsigned int* vertexCount, unsigned int currentColorIndex, unsigned int index);
-void loadModel(std::string filename, float** vertexPositions, float** vertexColors, unsigned int** indices, unsigned int* vertexCount, unsigned int* indicesCount);
+enum STATES {
+    QUERY_MTL = 0x0,
+    EXTRACT_DATA,
+    EXTRACT_FACES,
+};
 
 int loadOBJModel(std::string filename, float** vPositions, float** vColors, float** vNormals, unsigned int** indices, unsigned int* vCount, unsigned int* iCount);
+int loadOBJModel(std::string filename, float** vPositions, float** vColors, unsigned int** indices, unsigned int* vCount, unsigned int* iCount);
+
+static int readMTLFile(std::string materialFileName, Color** colors);
+static unsigned int updateVertexArray(float** vPositions, float** vColors, float** vNormals, float* tempVPositions, float* tempVNormals, Color color, unsigned int* vertexCount, unsigned int vpIndex, unsigned int vnIndex);
 
 #endif

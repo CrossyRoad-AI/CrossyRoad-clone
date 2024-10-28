@@ -24,8 +24,9 @@ void FPSCounter::update() {
     if(currentTime - lastUpdateTime >= this->updateFrequency) {
         this->frameElaspedTime = (currentTime - this->frameStart) * 1000;
         lastUpdateTime = currentTime;
+
+        this->text[8]; sprintf(this->text, "%.2f ms", this->frameElaspedTime);
     }
 
-    char text[8]; sprintf(text, "%.2f ms", this->frameElaspedTime);
-    this->textRenderer->renderText(text, 5.0f, 1180.0f, 1.0f, glm::vec3(0.8f, 0.8f, 0.8f));
+    this->textRenderer->renderText(this->text, 5.0f, 1180.0f, 1.0f, glm::vec3(0.8f, 0.8f, 0.8f));
 }

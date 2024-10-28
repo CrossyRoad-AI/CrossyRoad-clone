@@ -13,6 +13,8 @@ class FPSCounter {
         float frameStart;
         float frameElaspedTime;
 
+        char text[8];
+
     public:
         FPSCounter(const float updateFrequency);
         ~FPSCounter();
@@ -22,5 +24,3 @@ class FPSCounter {
 };
 
 #endif
-
-// glfwGetTime()

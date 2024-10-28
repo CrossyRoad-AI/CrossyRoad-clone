@@ -10,23 +10,25 @@
 #include "obstacleRow/obstacleRow.hpp"
 
 extern char* memoryBuffer;
-bool sendDataRequest = false;
-bool restartGame = false;
+bool sendDataRequest = true;
+bool gameRunning = true;
+bool shouldRestartGame = false;
 
 void sendData() {
     Game* game = Game::getInstance();
 
-    // Date is not ready
-    memoryBuffer[0] = 0;
+    // Clear memory buffer
+    for(int i = 0; i < 5000; i++) {
+        memoryBuffer[i] = 0;
+    }
 
-    // Store game state data
-    memcpy(&memoryBuffer[1], &game->playerRowIndex, 4); // Current score as int
-    memoryBuffer[5] = (restartGame ? 0 : 1); // Player state, 1 en vie, 0 mort --> edit
+    memcpy(&memoryBuffer[1], &game->playerScore, 4); // Current score as int
+    memoryBuffer[5] = (gameRunning ? 1 : 0); // Player state, 1 en vie, 0 mort --> edit
 
     // Player position
     glm::vec3 playerPos = game->player->getPosition();
     memcpy(&memoryBuffer[6], &playerPos.x, 4);
-    memcpy(&memoryBuffer[10], &playerPos.y, 4);
+    memcpy(&memoryBuffer[10], &playerPos.z, 4);
 
     unsigned int grassCount = 0; float* grassPositions = nullptr;
     unsigned int waterCount = 0; float* waterPositions = nullptr;
@@ -45,7 +47,7 @@ void sendData() {
             for(int j = 0; j < 11; j++) {
                 glm::vec3 grassPosition = ((GameObject*) row->groundObjects->getCurrent())->getPosition();
                 grassPositions[grassCount * 2 + j * 2] = grassPosition.x;
-                grassPositions[grassCount * 2 + j * 2 + 1] = grassPosition.y;
+                grassPositions[grassCount * 2 + j * 2 + 1] = grassPosition.z;
             }
 
             grassCount += 11;
@@ -57,7 +59,7 @@ void sendData() {
             for(int j = 0; j < row->obstacles->getCount(); j++) {
                 glm::vec3 treePosition = ((GameObject*) row->obstacles->getCurrent())->getPosition();
                 treesPositions[treesCount * 2 + j * 2] = treePosition.x;
-                treesPositions[treesCount * 2 + j * 2 + 1] = treePosition.y;
+                treesPositions[treesCount * 2 + j * 2 + 1] = treePosition.z;
             }
 
             treesCount += row->obstacles->getCount();
@@ -71,7 +73,7 @@ void sendData() {
             for(int j = 0; j < 11; j++) {
                 glm::vec3 waterPosition = ((GameObject*) row->waterObjects->getCurrent())->getPosition();
                 waterPositions[waterCount * 2 + j * 2] = waterPosition.x;
-                waterPositions[waterCount * 2 + j * 2 + 1] = waterPosition.y;
+                waterPositions[waterCount * 2 + j * 2 + 1] = waterPosition.z;
             }
 
             waterCount += 11;
@@ -83,7 +85,7 @@ void sendData() {
             for(int j = 0; j < row->groundObjects->getCount(); j++) {
                 glm::vec3 waterLilYPosition = ((GameObject*) row->groundObjects->getCurrent())->getPosition();
                 waterLilyPositions[waterLilyCount * 2 + j * 2] = waterLilYPosition.x;
-                waterLilyPositions[waterLilyCount * 2 + j * 2 + 1] = waterLilYPosition.y;
+                waterLilyPositions[waterLilyCount * 2 + j * 2 + 1] = waterLilYPosition.z;
             }
 
             waterLilyCount += row->groundObjects->getCount();
@@ -92,38 +94,29 @@ void sendData() {
 
     unsigned int offset = 14;
 
-    // for(int i = 0; i < grassCount * 2; i += 2) {
-    //     std::cout << grassPositions[i] << " " << grassPositions[i + 1] << " ";
-    // }
-
     // Store nb grass tiles and grass tiles positions
-    // memcpy(&memoryBuffer[offset], &grassCount, 4);
-
-    // if(grassCount > 0) memcpy(&memoryBuffer[offset + 4], grassPositions, grassCount * 2 * 4);
-    // offset = offset + 4 + grassCount * 2 * 4;
-
-    if(grassCount > 0) memcpy(&memoryBuffer[0], grassPositions, grassCount * 2 * 4);
+    memcpy(&memoryBuffer[offset], &grassCount, 4);
+    if(grassCount) memcpy(&memoryBuffer[offset + 4], grassPositions, grassCount * 2 * 4);
     offset = offset + 4 + grassCount * 2 * 4;
 
-    // // Store nb water tiles and grass tiles positions
-    // memcpy(&memoryBuffer[offset], &treesCount, 4);
-    // if(treesCount) memcpy(&memoryBuffer[offset + 4], treesPositions, treesCount * 2 * 4);
+    // Store nb water tiles and grass tiles positions
+    memcpy(&memoryBuffer[offset], &treesCount, 4);
+    if(treesCount) memcpy(&memoryBuffer[offset + 4], treesPositions, treesCount * 2 * 4);
+    offset = offset + 4 + treesCount * 2 * 4;
 
-    // offset = offset + 4 + treesCount * 2 * 4;
+    // Store nb water tiles and grass tiles positions
+    memcpy(&memoryBuffer[offset], &waterCount, 4);
+    if(waterCount) memcpy(&memoryBuffer[offset + 4], waterPositions, waterCount * 2 * 4);
+    offset = offset + 4 + waterCount * 2 * 4;
 
-    // // Store nb water tiles and grass tiles positions
-    // memcpy(&memoryBuffer[offset], &waterCount, 4);
-    // if(waterCount) memcpy(&memoryBuffer[offset + 4], waterPositions, waterCount * 2 * 4);
-
-    // offset = offset + 4 + waterCount * 2 * 4;
-
-    // // Store nb water tiles and grass tiles positions
-    // memcpy(&memoryBuffer[offset], &waterLilyCount, 4);
-    // if(waterLilyCount) memcpy(&memoryBuffer[offset + 4], waterLilyPositions, waterLilyCount * 2 * 4);
+    // Store nb water tiles and grass tiles positions
+    memcpy(&memoryBuffer[offset], &waterLilyCount, 4);
+    if(waterLilyCount) memcpy(&memoryBuffer[offset + 4], waterLilyPositions, waterLilyCount * 2 * 4);
+    offset = offset + 4 + waterLilyCount * 2 * 4;
 
     // // Int de fin
-    // unsigned int max = 4294967294; // All ones
-    // memcpy(&memoryBuffer[offset + 4], &max, 4);
+    unsigned int max = 4294967295; // All ones
+    memcpy(&memoryBuffer[offset], &max, 4);
 
     // Data is ready
     memoryBuffer[0] = 1;
@@ -159,6 +152,7 @@ Game::Game()
 
 void Game::initInputs() {
     this->inputsManager->listenKey(0, GLFW_KEY_ESCAPE, 0, Game::quitGame);
+    this->inputsManager->listenKey(0, GLFW_KEY_ENTER, 2, Game::restartGame);
     this->inputsManager->listenKey(0, GLFW_KEY_SPACE, 2, Game::toggleWireframe);
 
     this->inputsManager->listenKey(0, GLFW_KEY_W, 2, Game::movePlayerForward);
@@ -192,6 +186,7 @@ void Game::loadModels() {
 
 void Game::initRun() {
     this->playerRowIndex = 5;
+    this->playerScore = 0;
     this->furthestRowIndex = 6;
 
     this->rows->add(new ObstacleRow(ROW_GRASS | ROW_GRASS_FULL_TREE, 0, this));
@@ -218,7 +213,8 @@ void Game::playerMove(const glm::vec3 direction, const unsigned int rowIndex) {
     playerPos += direction;
 
     if(!((ObstacleRow*) this->rows->getElementById(rowIndex))->checkGround(playerPos)) {
-        restartGame = true;
+        gameRunning = false;
+        shouldRestartGame = false;
     } else if(!((ObstacleRow*) this->rows->getElementById(rowIndex))->checkCollisions(playerPos)) {
         if(direction.x < 0) playerRot.y = -90;
         if(direction.x > 0) playerRot.y = 90;
@@ -232,6 +228,7 @@ void Game::playerMove(const glm::vec3 direction, const unsigned int rowIndex) {
 
         this->camera->move(this->camera->getPosition() + direction);
         this->playerRowIndex = rowIndex;
+        this->playerScore = this->playerRowIndex - 5;
     } else {
         // Collide
     }
@@ -239,28 +236,12 @@ void Game::playerMove(const glm::vec3 direction, const unsigned int rowIndex) {
 
 void Game::loop() {
     do {
-        // float y = this->gameObjectWaterLily1->getRotateY() + 0.4;
-        // this->gameObjectWaterLily1->rotate(0, y, 0);
-
-        // y = gameObjectWaterLily2->getRotateY() - 0.3;
-        // gameObjectWaterLily2->rotate(0, y, 0);
-
-        // xposlast = xpos;
-        // yposlast = ypos;
-        // glfwGetCursorPos(engine->getWindow(), &xpos, &ypos);
-
-        // glm::vec3 position = camera->getPosition();
-        // camera->move(glm::vec3(position[0], position[1], position[2] - 0.05f));
-
-        // glm::vec3 target = camera->getTarget();
-        // camera->pointAt(glm::vec3(target[0], target[1], target[2] - 0.05f));
-
         // Update all rows
         this->rows->restart(); ObstacleRow* row;
         for(int i = 0; i < this->rows->getCount(); i++) {
             row = (ObstacleRow*) this->rows->getElementByIndex(i);
 
-            // Remove too far behind rows
+            // Remove rows too far behind
             if(row->getRowIndex() + ROWS_BEHIND_PLAYER < this->playerRowIndex) delete (ObstacleRow*) this->rows->removeByIndex(0);
             else row->update();
         }
@@ -270,12 +251,14 @@ void Game::loop() {
 
         // Write data to shared memory
         if(sendDataRequest) sendData();
-    } while(!this->engine->loopOnce() && !restartGame);
+    } while(!this->engine->loopOnce() && gameRunning);
 
-    if(restartGame) {
-        restartGame = false;
-        this->restart();
-    }
+    sendData();
+
+    // Wait for restart
+    do {
+        if(shouldRestartGame) this->restart();
+    } while(!this->engine->loopOnce());
 }
 
 void Game::generateNewRows() {
@@ -323,6 +306,10 @@ void Game::restart() {
     // Refill data
     this->loadModels();
     this->initRun();
+
+    sendDataRequest = true;
+    shouldRestartGame = false;
+    gameRunning = true;
 
     this->loop();
 }

@@ -5,6 +5,7 @@
 #include "../engine/utils/doubleLinkedList/doubleLinkedList.hpp"
 
 extern unsigned int chickenRowId;
+extern bool shouldRestartGame;
 
 class Game {
     private:
@@ -36,6 +37,7 @@ class Game {
         GameObject* player;
 
         unsigned int playerRowIndex;
+        unsigned int playerScore;
         unsigned int furthestRowIndex;
 
         void initInputs();
@@ -55,6 +57,7 @@ class Game {
 
         // Inputs callback functions
         inline static void quitGame() { glfwSetWindowShouldClose(Game::getInstance()->engine->getWindow(), true); }
+        inline static void restartGame() { shouldRestartGame = true; }
         inline static void toggleWireframe() { Game::getInstance()->engine->toggleWireframeMode(); }
 
         inline static void movePlayerForward() { Game* game = Game::getInstance(); game->playerMove(glm::vec3(0.0f, 0.0f, -6.0f), game->playerRowIndex + 1); }

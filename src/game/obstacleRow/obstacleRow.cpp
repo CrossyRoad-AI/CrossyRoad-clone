@@ -34,10 +34,12 @@ ObstacleRow::ObstacleRow(const unsigned int rowTypep, const unsigned int rowInde
         if(this->rowTypeSpecific == ROW_GRASS_FULL_TREE) {
             for(int i = 0; i < 9; i++) this->obstacles->add(new GameObject(getRandomProp(game->trees, 3), glm::vec3(-12.0f + i * 6.0f, 3.0f, this->rowIndex * (-6.0f)), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f)));
         } else if(this->rowTypeSpecific == ROW_GRASS_FEW_TREES_RANDOM) {
-            for(int i = 0; i < 0 + rand() % 2; i++) this->obstacles->add(new GameObject(getRandomProp(game->trees, 3), glm::vec3(-12.0f + (rand() % 9) * 6.0f, 3.0f, this->rowIndex * (-6.0f)), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f)));
+            for(int i = 0; i < 0; i++) this->obstacles->add(new GameObject(getRandomProp(game->trees, 3), glm::vec3(-12.0f + (rand() % 9) * 6.0f, 3.0f, this->rowIndex * (-6.0f)), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f)));
         } else if(this->rowTypeSpecific == ROW_GRASS_ALOT_TREES_RANDOM) {
-            for(int i = 0; i < 1 + rand() % 2; i++) this->obstacles->add(new GameObject(getRandomProp(game->trees, 3), glm::vec3(-12.0f + (rand() % 9) * 6.0f, 3.0f, this->rowIndex * (-6.0f)), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f)));
+            for(int i = 0; i < 0; i++) this->obstacles->add(new GameObject(getRandomProp(game->trees, 3), glm::vec3(-12.0f + (rand() % 9) * 6.0f, 3.0f, this->rowIndex * (-6.0f)), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f)));
         }
+
+        // rand() % 2
 
         // Generate ground tiles
         for(int i = 0; i < 11; i++) this->groundObjects->add(new GameObject(ground, glm::vec3((6 * 7) - i * 6.0f, 0.0f, this->rowIndex * (-6.0f)), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f)));

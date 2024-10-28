@@ -7,7 +7,7 @@
 typedef void (*CallbackPointer)(void);
 
 typedef struct EventsToListen_ {
-    unsigned int device; // 0: key, 1: mouse
+    char device; // 0: key, 1: mouse
 
     unsigned int key; // GLFW key constant
     char mode; // 0: all, 1: keyup, 2: key down
@@ -28,7 +28,7 @@ class InputManager {
         InputManager(GLFWwindow *window);
         ~InputManager();
 
-        void listenKey(unsigned int device, unsigned int key, char mode, CallbackPointer callback);
+        void listenKey(char device, unsigned int key, char mode, CallbackPointer callback);
 
         void processInputs();
 };
