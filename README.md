@@ -66,6 +66,14 @@ To quit the game you can either:
 - use the close button on Windows task bar
 - or kill the process with the task manager
 
+## Linking with python AI
+
+Although the game is playable with the keyboard, it has been designed to be linked with another program. The communication with the other program is achieved with windows Shared Memory, which reserve a physical memory space, avaialbe for any program, to read and write to it.
+
+A special communication protocol have been defined allowing for timed read and write to preserved data integrity. To simplify the integration of this protocol inside yor own app, you may use the python class called **sharedMemoryManager**, which is available inside the RL-model repo of the same organization.
+
+For both programs, .exe and python, need to be executed as admin to have the rights to register and open a Shared memory space.
+
 ## Acronyms
 
 GLFW: GL Frame Work
