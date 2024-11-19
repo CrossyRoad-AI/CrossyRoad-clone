@@ -4,7 +4,6 @@
 
 #include "obstacleRow.hpp"
 
-#include "../../engine/gameObjects/gameObjects.hpp"
 #include "../../engine/utils/linkedList/linkedList.hpp"
 
 #include "../constants/constants.h"
@@ -14,7 +13,7 @@ Renderable* getRandomProp(Renderable** prop, unsigned int count) {
 }
 
 ObstacleRow::ObstacleRow(const unsigned int rowTypep, const unsigned int rowIndexp, Game* game)
-    : rowIndex(rowIndexp), waterObjects(new LinkedList()), groundObjects(new LinkedList()), obstacles(new LinkedList())
+    : rowIndex(rowIndexp), waterObjects(new LinkedList(this->freeCallback)), groundObjects(new LinkedList(this->freeCallback)), obstacles(new LinkedList(this->freeCallback))
 {
     Renderable* ground;
     Renderable* props;
@@ -57,9 +56,9 @@ ObstacleRow::ObstacleRow(const unsigned int rowTypep, const unsigned int rowInde
 }
 
 ObstacleRow::~ObstacleRow() {
-    while(this->waterObjects->getCount()) delete (GameObject*) this->waterObjects->removeByIndex(0);
-    while(this->groundObjects->getCount()) delete (GameObject*) this->groundObjects->removeByIndex(0);
-    while(this->obstacles->getCount()) delete (GameObject*) this->obstacles->removeByIndex(0);
+    while(this->waterObjects->getCount()) this->waterObjects->removeByIndex(0);
+    while(this->groundObjects->getCount()) this->groundObjects->removeByIndex(0);
+    while(this->obstacles->getCount()) this->obstacles->removeByIndex(0);
 
     delete this->waterObjects;
     delete this->groundObjects;

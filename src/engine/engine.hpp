@@ -1,14 +1,28 @@
 #ifndef ENGINE_HPP
 #define ENGINE_HPP
 
-#include "renderer/renderer.hpp"
-#include "camera/camera.hpp"
-#include "inputs/inputs.hpp"
+#include "rendering/renderer/renderer.hpp"
 
-#include "renderable/renderable.hpp"
-#include "gameObjects/gameObjects.hpp"
+#include "objects/renderable/renderable.hpp"
+#include "objects/gameObjects/gameObjects.hpp"
 
-#include "fpscounter/fpscounter.hpp"
+#include "components/fpsCounter/fpsCounter.hpp"
+#include "components/camera/camera.hpp"
+#include "components/inputs/inputs.hpp"
+
+#include "lights/lightRenderer.hpp"
+
+typedef struct WindowParams_ {
+    const char* windowName;
+    
+    const unsigned int width;
+    const unsigned int height;
+    const unsigned int frameRateHint;
+    const unsigned int samples;
+
+    bool enableVSync;
+    bool centered;
+} WindowParams;
 
 class Engine {
     private:
@@ -20,17 +34,21 @@ class Engine {
 
         bool showFPS;
         bool wireframeMode;
+        bool debugMode;
 
     public:
         // Constructor
-        Engine(const char* windowName, const unsigned int width, const unsigned int height);
+        Engine(WindowParams windowParams);
 
         // Enable / disable settings
         void fpsDisplayMode(const bool showFPS, const float updateFrequency);
         inline void toggleWireframeMode() { this->wireframeMode = !this->wireframeMode; };
+        inline void setClearColor(const float r, const float g, const float b, const float a) { glClearColor(r, g, b, a); }
 
         char loopOnce();
+
         void checkGlErrors();
+        inline void enableDebugMode() { this->debugMode = true; };
 
         void quit();
 

@@ -4,11 +4,11 @@
 #include <glfw3.h>
 
 #include "engine.hpp"
-#include "window/window.hpp"
+#include "components/window/window.hpp"
 
-#include "fpscounter/fpscounter.hpp"
+#include "components/fpsCounter/fpsCounter.hpp"
 
-Engine::Engine(const char* windowName, const unsigned int width, const unsigned int height)
+Engine::Engine(WindowParams windowParams)
     : renderer(nullptr), inputsManager(nullptr), 
     showFPS(false), wireframeMode(false)
 {
@@ -19,12 +19,18 @@ Engine::Engine(const char* windowName, const unsigned int width, const unsigned 
     }
 
     // Create window
-    this->window = createWindow(windowName, width, height);
+    this->window = utils_createWindow(windowParams.windowName, windowParams.width, windowParams.height, windowParams.frameRateHint, windowParams.samples, windowParams.enableVSync, windowParams.centered);
+    if(!this->window) {
+        std::cout << "Window creation error" << std::endl;
+        exit(1);
+    }
 
     // Initialize glew
     if(glewInit() != GLEW_OK) {
         std::cout << "Glew init error" << std::endl;
-        exit(2);
+
+        glfwTerminate();
+        exit(1);
     }
 
     // Print OpenGL version
@@ -42,14 +48,17 @@ Engine::Engine(const char* windowName, const unsigned int width, const unsigned 
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // Setup the screen clear color
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 void Engine::fpsDisplayMode(const bool showFPSp, const float updateFrequency) {
     this->showFPS = showFPSp;
 
     if(showFPS) this->fpscounter = new FPSCounter(updateFrequency);
-    else this->fpscounter = nullptr;
+    else {
+        delete this->fpscounter;
+        this->fpscounter = nullptr;
+    }
 }
 
 char Engine::loopOnce() {
@@ -81,7 +90,7 @@ char Engine::loopOnce() {
     glfwSwapBuffers(this->window);
 
     // Check for errors
-    this->checkGlErrors();
+    if(this->debugMode) this->checkGlErrors();
 
     // Poll for and process events
     glfwPollEvents();
@@ -92,7 +101,6 @@ char Engine::loopOnce() {
 void Engine::quit() {
     // In window file, close GLFW window
     if(this->window) closeWindow(this->window);
-
     glfwTerminate();
 }
 

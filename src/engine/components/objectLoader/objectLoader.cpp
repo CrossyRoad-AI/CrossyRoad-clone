@@ -132,6 +132,13 @@ int loadOBJModel(std::string filename, float** vPositions, float** vColors, floa
         }
     }
 
+    // printf("vCount: %d\n", *vCount);
+
+    // Free memory
+    free(tempVerticesPositions);
+    free(tempVerticesNormals);
+    free(colors);
+
     return 1;
 }
 
@@ -178,12 +185,31 @@ int readMTLFile(std::string materialFileName, Color** colors) {
 
 unsigned int updateVertexArray(float** vPositions, float** vColors, float** vNormals, float* tempVPositions, float* tempVNormals, Color color, unsigned int* vertexCount, unsigned int vpIndex, unsigned int vnIndex) {
     *vPositions = (float*) realloc(*vPositions, sizeof(float) * (*vertexCount + 3));
+    // *vColors = (float*) realloc(*vColors, sizeof(RawColor) * (*vertexCount / 3 + 1));
     *vColors = (float*) realloc(*vColors, sizeof(float) * (*vertexCount + 3));
     *vNormals = (float*) realloc(*vNormals, sizeof(float) * (*vertexCount + 3));
 
     (*vPositions)[*vertexCount] = tempVPositions[vpIndex * 3];
     (*vPositions)[*vertexCount + 1] = tempVPositions[vpIndex * 3 + 1];
     (*vPositions)[*vertexCount + 2] = tempVPositions[vpIndex * 3 + 2];
+
+    // int baseIncrement = (sizeof(RawColor) / sizeof(float)) * (*vertexCount / 3);
+    // (*vColors)[baseIncrement] = color.ns;
+    // (*vColors)[baseIncrement + 1] = color.ka[0];
+    // (*vColors)[baseIncrement + 2] = color.ka[1];
+    // (*vColors)[baseIncrement + 3] = color.ka[2];
+    // (*vColors)[baseIncrement + 4] = color.kd[0];
+    // (*vColors)[baseIncrement + 5] = color.kd[1];
+    // (*vColors)[baseIncrement + 6] = color.kd[2];
+    // (*vColors)[baseIncrement + 7] = color.ks[0];
+    // (*vColors)[baseIncrement + 8] = color.ks[1];
+    // (*vColors)[baseIncrement + 9] = color.ks[2];
+    // (*vColors)[baseIncrement + 10] = color.ke[0];
+    // (*vColors)[baseIncrement + 11] = color.ke[1];
+    // (*vColors)[baseIncrement + 12] = color.ke[2];
+    // (*vColors)[baseIncrement + 13] = color.ni;
+    // (*vColors)[baseIncrement + 14] = color.d;
+    // (*vColors)[baseIncrement + 15] = color.illum;
 
     (*vColors)[*vertexCount] = color.kd[0];
     (*vColors)[*vertexCount + 1] = color.kd[1];

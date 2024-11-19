@@ -11,6 +11,8 @@ class ObstacleRow {
 
         unsigned int rowIndex;
 
+        static inline void freeCallback(void* element) { delete (GameObject*) element; }; 
+
     public:
         ObstacleRow(const unsigned int rowType, const unsigned int rowIndex, Game* game);
         ~ObstacleRow();

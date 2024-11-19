@@ -1,7 +1,7 @@
 #ifndef FPSCOUNTER_HPP
 #define FPSCOUNTER_HPP
 
-#include "../textRenderer/textRenderer.hpp"
+#include "../../ui/textRenderer.hpp"
 
 class FPSCounter {
     private:

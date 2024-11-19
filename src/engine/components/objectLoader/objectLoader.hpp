@@ -14,6 +14,17 @@ typedef struct Color_ {
     int illum;
 } Color;
 
+typedef struct RawColor_ {
+    float ns;
+    float ka[3];
+    float kd[3];
+    float ks[3];
+    float ke[3];
+    float ni;
+    float d;
+    int illum;
+} RawColor;
+
 enum STATES {
     QUERY_MTL = 0x0,
     EXTRACT_DATA,

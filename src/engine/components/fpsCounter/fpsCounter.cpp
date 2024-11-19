@@ -2,7 +2,7 @@
 
 #include "fpscounter.hpp"
 
-#include "../textRenderer/textRenderer.hpp"
+#include "../../ui/textRenderer.hpp"
 
 FPSCounter::FPSCounter(const float updateFrequencyp)
     : updateFrequency(updateFrequencyp), lastUpdateTime(0), frameStart(glfwGetTime()), frameElaspedTime(0)

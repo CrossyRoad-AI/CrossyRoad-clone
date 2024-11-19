@@ -15,6 +15,7 @@ class Game {
         InputManager *inputsManager;
 
         Renderer *renderer;
+        LightRenderer *lightRenderer;
         Camera* camera;
 
     public:

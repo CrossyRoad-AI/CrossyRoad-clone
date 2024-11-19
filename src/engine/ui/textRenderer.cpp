@@ -13,31 +13,29 @@
 
 #include "textRenderer.hpp"
 
-#include "../shaders/shaderLoader.hpp"
-
-std::map<char, Character> Characters;
+#include "../rendering/shaders/shaderLoader.hpp"
 
 TextRenderer::TextRenderer(unsigned int fontSize) {
     FT_Library ft;
     if(FT_Init_FreeType(&ft)) {
         std::cout << "Could not init FreeType Library" << std::endl;
-        exit(10);
+        exit(1);
     }
 
     FT_Face face;
     if(FT_New_Face(ft, "fonts/Roboto.ttf", 0, &face)) {
         std::cout << "Failed to load font" << std::endl;  
-        exit(11);
+        exit(1);
     }
 
     FT_Set_Pixel_Sizes(face, 0, fontSize); // Set font size
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // Disable byte-alignment restriction
 
-    for (unsigned char c = 0; c < 128; c++) {
+    for(unsigned char c = 0; c < 128; c++) {
         // Load character glyph 
         if(FT_Load_Char(face, c, FT_LOAD_RENDER)) {
             std::cout << "Failed to load Glyph" << std::endl;
-            continue;
+            exit(1);
         }
 
         // Generate texture
@@ -54,13 +52,13 @@ TextRenderer::TextRenderer(unsigned int fontSize) {
 
         // Now store character for later use
         Character character = {
-            texture, 
+            texture,
             glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
             glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
             face->glyph->advance.x
         };
 
-        Characters.insert(std::pair<char, Character>(c, character));
+        this->characters.insert(std::pair<char, Character>(c, character));
     }
 
     FT_Done_Face(face);
@@ -117,7 +115,7 @@ void TextRenderer::renderText(const std::string text, float x, const float y, co
     // Iterate through all characters
     std::string::const_iterator c;
     for (c = text.begin(); c != text.end(); c++) {
-        Character ch = Characters[*c];
+        Character ch = this->characters[*c];
 
         // Calc positions x / y and width / height
         float xpos = x + ch.bearing.x * scale;

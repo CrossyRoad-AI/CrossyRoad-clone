@@ -3,11 +3,23 @@
 
 #include "linkedList.hpp"
 
-LinkedList::LinkedList()
+LinkedList::LinkedList(void (*freeCallback)(void* element))
     : firstElement(nullptr), currentElement(nullptr), count(0)
-{}
+{
+    this->freeCallback = freeCallback;
+}
 
-LinkedList::~LinkedList() {}
+LinkedList::~LinkedList() {
+    LinkedListt* current = this->firstElement;
+    while(current) {
+        LinkedListt* next = current->next;
+
+        this->freeCallback(current->content);
+        free(current);
+
+        current = next;
+    }
+}
 
 unsigned int LinkedList::add(void* element) {
     LinkedListt* listElement = (LinkedListt*) malloc(sizeof(LinkedListt));
@@ -32,57 +44,50 @@ unsigned int LinkedList::add(void* element) {
     }
 }
 
-void* LinkedList::update(const unsigned int index, void* element) {
+void LinkedList::updateByIndex(const unsigned int index, void* element) {
     LinkedListt* current = this->firstElement;
-    unsigned int i = 0;
 
+    unsigned int i = 0;
     while(i ++ < index) current = current->next;
 
-    void* contentToFree = current->content;
+    this->freeCallback(current->content);
     current->content = element;
-
-    return contentToFree;
 }
 
-void* LinkedList::updateById(const unsigned int instanceId, void* element) {
+void LinkedList::updateById(const unsigned int instanceId, void* element) {
     LinkedListt* current = this->firstElement;
     while(current->id < instanceId) current = current->next;
 
-    void* contentToFree = current->content;
+    this->freeCallback(current->content);
     current->content = element;
-
-    return contentToFree;
 }
 
-void* LinkedList::removeByIndex(const unsigned int index) {
+void LinkedList::removeByIndex(const unsigned int index) {
     LinkedListt* current = this->firstElement;
-    void* contentToFree;
+    this->count --;
 
     if(index == 0) {
         this->firstElement = this->firstElement->next;
 
-        contentToFree = current->content;
+        this->freeCallback(current->content);
         free(current);
     } else {
         unsigned int i = 0;
         while(i ++ < index - 1) current = current->next;
         LinkedListt* next = current->next->next;
 
-        contentToFree = current->next->content;
+        this->freeCallback(current->next->content);
         free(current->next);
 
         current->next = next;
     }
-
-    this->count --;
-    return contentToFree;
 }
 
-void* LinkedList::removeById(const unsigned int id) {
+void LinkedList::removeById(const unsigned int id) {
     LinkedListt* current = this->firstElement;
-    unsigned int i = 0;
-    void* contentToFree;
+    this->count --;
 
+    unsigned int i = 0;
     while(current->id < id) {
         current = current->next;
         i ++;
@@ -91,19 +96,16 @@ void* LinkedList::removeById(const unsigned int id) {
     if(i == 0) {
         this->firstElement = this->firstElement->next;
 
-        contentToFree = current->content;
+        this->freeCallback(current->content);
         free(current);
     } else {
         LinkedListt* next = current->next->next;
 
-        contentToFree = current->next->content;
+        this->freeCallback(current->next->content);
         free(current->next);
 
         current->next = next;
     }
-
-    this->count --;
-    return contentToFree;
 }
 
 void* LinkedList::getCurrent() {

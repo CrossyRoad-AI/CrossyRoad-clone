@@ -7,32 +7,33 @@
 #include <gtc/matrix_transform.hpp>
 #include <gtc/type_ptr.hpp>
 
-#include "../renderer/vertexBuffer/vertexBuffer.hpp"
-#include "../renderer/indexBuffer/indexBuffer.hpp"
+#include "../../rendering/vertexBuffer/vertexBuffer.hpp"
+#include "../../rendering/indexBuffer/indexBuffer.hpp"
 
-#include "../utils/linkedlist/linkedlist.hpp"
+#include "../../utils/linkedlist/linkedlist.hpp"
 
 class Renderable {
     private:
         unsigned int vao;
         unsigned int indicesCount;
 
-        bool useNormals;
-
         bool updatedData;
         LinkedList* modelMatrices;
+        LinkedList* normalMatrices;
 
         VertexBuffer* vbp;
         VertexBuffer* vbc;
         VertexBuffer* vbn;
         VertexBuffer* vbi;
+        VertexBuffer* vbnm;
         IndexBuffer* ib;
 
         unsigned int shaderProgram;
 
+        static inline void freeCallback(void* element) { free(element); }; 
+
     public:
-        // Renderable(std::string modelFilename); // Constructor
-        Renderable(std::string modelFilename, bool useNormals); // Constructor
+        Renderable(std::string modelFilename); // Constructor
         ~Renderable(); // Destructor
 
         unsigned int addInstance(glm::mat4 modelMatrix);

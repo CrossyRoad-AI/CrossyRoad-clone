@@ -2,6 +2,7 @@
 #define TEXTRENDERER_HPP
 
 #include <string>
+#include <map>
 
 #include <glfw3.h>
 #include <glm.hpp>
@@ -24,6 +25,8 @@ class TextRenderer {
         unsigned int projectionLocation;
 
         glm::mat4 projectionMatrix;
+
+        std::map<char, Character> characters;
 
     public:
         // Constructor / destructor

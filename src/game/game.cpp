@@ -2,7 +2,6 @@
 
 #include "../engine/engine.hpp"
 #include "../engine/utils/doubleLinkedList/doubleLinkedList.hpp"
-#include "../engine/gameObjects/gameObjects.hpp"
 
 #include "constants/constants.h"
 
@@ -14,7 +13,7 @@ bool sendDataRequest = true;
 bool gameRunning = true;
 bool shouldRestartGame = false;
 
-void sendData() {
+void sendDatav1() {
     Game* game = Game::getInstance();
 
     // Clear memory buffer
@@ -119,6 +118,69 @@ void sendData() {
     sendDataRequest = false;
 }
 
+void sendData() {
+    Game* game = Game::getInstance();
+
+    // Clear memory buffer
+    for(int i = 0; i < 1200; i++) memoryBuffer[i] = 0;
+
+    memcpy(&memoryBuffer[1], &game->playerScore, 4); // Current score as int
+    memoryBuffer[5] = (gameRunning ? 1 : 0); // Player state, 1 en vie, 0 mort --> edit
+
+    // Data
+    char* data = nullptr;
+    data = (char*) realloc(data, sizeof(char) * 1100);
+
+    int index = 0;
+
+    int nbRows = 0;
+    game->rows->restart(); ObstacleRow* row;
+    for(int i = 0; i < game->rows->getCount(); i++) {
+        nbRows++;
+        row = (ObstacleRow*) game->rows->getElementByIndex(i);
+
+        if(row->getType() == ROW_GRASS >> 4) {
+            for(int i = 0; i < 11; i++) data[i + index] = 0;
+
+            row->obstacles->restart();
+            for(int j = 0; j < row->obstacles->getCount(); j++) {
+                glm::vec3 treePosition = ((GameObject*) row->obstacles->getCurrent())->getPosition();
+                
+                int treeIndex = (int) (treePosition.x / 6.0f) + 3;
+                data[treeIndex + index] = 1;
+            }
+        } else if(row->getType() == ROW_WATER >> 4) {
+            for(int i = 0; i < 11; i++) data[i + index] = 2;
+
+            row->groundObjects->restart();
+            for(int j = 0; j < row->groundObjects->getCount(); j++) {
+                glm::vec3 waterPosition = ((GameObject*) row->groundObjects->getCurrent())->getPosition();
+                
+                int waterIndex = (int) (waterPosition.x / 6.0f) + 3;
+                data[waterIndex + index] = 4;
+            }
+        }
+
+        index += 11;
+    }
+
+    // Player position
+    glm::vec3 playerPos = game->player->getPosition();
+    int playerIndex = (int) (playerPos.x / 6.0f) + 3;
+
+    int offSetIndex = game->playerRowIndex * 11;
+    data[playerIndex + offSetIndex] = 5;
+
+    memcpy(&memoryBuffer[6], &nbRows, 4);
+    memcpy(&memoryBuffer[10], data, 1100);
+
+    // Data is ready
+    memoryBuffer[0] = 1;
+
+    // Reset flag
+    sendDataRequest = false;
+}
+
 // Game class singletin
 Game* Game::instance = nullptr;
 
@@ -130,12 +192,21 @@ Game* Game::getInstance() {
 Game::Game()
     : rows(new DoubleLinkedList())
 {
-    this->engine = new Engine("Crossy road", 800, 1200);
+    const WindowParams windowParams = { "Crossy Road", 800, 1200, 120, 8, true, true };
+    this->engine = new Engine(windowParams);
+
+    this->engine->setClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    this->engine->enableDebugMode();
     this->engine->fpsDisplayMode(true, 0.2f);
 
-    this->camera = new Camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-
     this->renderer = new Renderer(this->engine->getWindow());
+
+    this->lightRenderer = new LightRenderer();
+    this->lightRenderer->setAmbientLight(glm::vec3(0.788f, 0.886f, 1.0f), 0.5f);
+
+    renderer->registerLightRenderer(this->lightRenderer);
+
+    this->camera = new Camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
     this->renderer->registerCamera(this->camera);
 
     this->inputsManager = new InputManager(this->engine->getWindow());
@@ -156,25 +227,25 @@ void Game::initInputs() {
 }
 
 void Game::loadModels() {
-    this->trees[0] = new Renderable("plants/trees/small/tree_small_normals", true);
+    this->trees[0] = new Renderable("plants/trees/small/tree_small_normals");
     this->renderer->registerRenderable(this->trees[0]);
 
-    this->grass = new Renderable("ground/grass/grass_normals", true);
+    this->grass = new Renderable("ground/grass/grass_normals");
     this->renderer->registerRenderable(this->grass);
 
-    this->water = new Renderable("ground/water/water_normals", true);
+    this->water = new Renderable("ground/water/water_normals");
     this->renderer->registerRenderable(this->water);
 
-    this->trees[1] = new Renderable("plants/trees/mid/tree_mid_normals", true);
+    this->trees[1] = new Renderable("plants/trees/mid/tree_mid_normals");
     this->renderer->registerRenderable(this->trees[1]);
 
-    this->trees[2] = new Renderable("plants/trees/big/tree_big_normals", true);
+    this->trees[2] = new Renderable("plants/trees/big/tree_big_normals");
     this->renderer->registerRenderable(this->trees[2]);
 
-    this->waterLily = new Renderable("plants/water-lily/water-lily_normals", true);
+    this->waterLily = new Renderable("plants/water-lily/water-lily_normals");
     this->renderer->registerRenderable(this->waterLily);
     
-    this->chicken = new Renderable("players/chicken/chicken_normals", true);
+    this->chicken = new Renderable("players/chicken/chicken_normals");
     this->renderer->registerRenderable(this->chicken);
 }
 

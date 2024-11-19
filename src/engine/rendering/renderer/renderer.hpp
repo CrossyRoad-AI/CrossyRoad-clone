@@ -4,15 +4,20 @@
 #include <glfw3.h>
 #include <glm.hpp>
 
-#include "../camera/camera.hpp"
-#include "../renderable/renderable.hpp"
+#include "../../components/camera/camera.hpp"
+#include "../../objects/renderable/renderable.hpp"
+
+#include "../../lights/lightRenderer.hpp"
 
 class Renderer {
     private:
         GLFWwindow* window;
-        Camera* camera;
 
-        unsigned int ubo;
+        Camera* camera;
+        LightRenderer* lightRenderer;
+
+        unsigned int matricesUbo;
+        unsigned int viewPosUbo;
 
         glm::mat4 projectionMatrix;
 
@@ -30,6 +35,7 @@ class Renderer {
 
         // Setters and getters
         inline void registerCamera(Camera* camera) { this->camera = camera; }
+        inline void registerLightRenderer(LightRenderer* lightRenderer) { this->lightRenderer = lightRenderer; }
 };
 
 #endif

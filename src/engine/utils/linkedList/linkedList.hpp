@@ -15,17 +15,19 @@ class LinkedList {
 
         unsigned int count;
 
+        void (*freeCallback)(void* element);
+
     public:
-        LinkedList();
+        LinkedList(void (*freeCallback)(void* element));
         ~LinkedList();
 
         unsigned int add(void* element);
 
-        void* update(const unsigned int index, void* element);
-        void* updateById(const unsigned int instanceId, void* element);
+        void updateByIndex(const unsigned int index, void* element);
+        void updateById(const unsigned int instanceId, void* element);
 
-        void* removeByIndex(const unsigned int index);
-        void* removeById(const unsigned int id);
+        void removeByIndex(const unsigned int index);
+        void removeById(const unsigned int id);
 
         // Getters and setters
         inline void* first() { return this->firstElement->content; }
